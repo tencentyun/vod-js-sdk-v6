@@ -15,16 +15,22 @@ export interface IUploader {
   progress?: Function,
   hashProgress?: Function,
   allowAudio?: boolean,
+  videoName?: string,
+  coverFile?: File,
 }
 
 class Uploader implements IUploader {
   getSignature: IGetSignature;
   videoFile: File;
   videoInfo: {name: string, type: string, size: number};
+  coverFile: File;
+  coverInfo: {name: string, type: string, size: number};
   progress: Function = () => {};
   hashProgress: Function = () => {};
   cosSuccess: Function = () => {}
   allowAudio: boolean = false;
+  videoName: string;
+  storageName: string;
 
   constructor(params: IUploader) {
     this.validateInitParams(params);
@@ -36,6 +42,8 @@ class Uploader implements IUploader {
     this.hashProgress = params.hashProgress;
     this.cosSuccess = params.cosSuccess;
     this.allowAudio = params.allowAudio;
+    this.videoName = params.videoName;
+    this.coverFile = params.coverFile;
 
     this.validateUploadParams()
   }
@@ -109,8 +117,11 @@ class Uploader implements IUploader {
     if (!is.fn(params.getSignature)) {
       throw 'getSignature必须为函数';
     }
+    if (!isFile(params.videoFile)) {
+      throw 'videoFile必须为视频文件';
+    }
 
-    if (!is.fn(params.cosSuccess)) {
+    if (params.cosSuccess && !is.fn(params.cosSuccess)) {
       throw 'success必须为函数';
     }
 
@@ -120,11 +131,10 @@ class Uploader implements IUploader {
     if (params.hashProgress && !is.fn(params.hashProgress)) {
       throw 'hashProgress必须为函数';
     }
-    if (!isFile(params.videoFile)) {
-      throw 'videoFile必须为视频文件';
-    }
+
   }
 
+  // validate when init done
   validateUploadParams() {
     let allowVideoTypes = this.videoTypes
     //视频格式过滤
@@ -135,6 +145,45 @@ class Uploader implements IUploader {
       console.log("视频文件格式不正确，请参考 https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
     }
   }
+
+  genFileInfo() {
+    //视频
+    const videoFile = this.videoFile;
+    if (videoFile) {
+      const lastDotIndex = videoFile.name.lastIndexOf('.');
+      let videoName = '';
+      //有指定视频名称，则用该名称
+      if (this.videoName) {
+        if (!is.string(this.videoName)) {
+          throw 'videoName只能是字符串类型';
+        } else if (/[:*?<>\"\\/|]/g.test(this.videoName)) {
+          throw '文件名不得包含 \\ / : * ? " < > | 字符';
+        } else {
+          videoName = this.videoName;
+        }
+      } else { //不然，则用上传文件的name
+        videoName = videoFile.name.substring(0, lastDotIndex);
+      }
+      this.videoInfo = {
+        name: videoName,
+        type: videoFile.name.substring(lastDotIndex + 1).toLowerCase(),
+        size: videoFile.size
+      };
+      this.storageName = videoFile.name + '_' + videoFile.size;
+    }
+
+    //封面
+    const coverFile = this.coverFile;
+    if (coverFile) {
+      const coverName = coverFile.name;
+      const coverLastDotIndex = coverName.lastIndexOf('.');
+      this.coverInfo = {
+        name: coverName.substring(0, coverLastDotIndex),
+        type: coverName.substring(coverLastDotIndex + 1).toLowerCase(),
+        size: coverFile.size
+      };
+    }
+  };
 
   done() {
 

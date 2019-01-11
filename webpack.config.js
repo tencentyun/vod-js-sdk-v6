@@ -1,6 +1,8 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'production',
+  devtool: 'source-map',
   entry: './src/tc_vod.ts',
   module: {
     rules: [
