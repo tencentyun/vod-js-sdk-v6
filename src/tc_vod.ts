@@ -12,8 +12,9 @@ class TcVod {
   upload(params: IUploader) {
     params = {getSignature: this.getSignature, ...params,}
     const uploader = new Uploader(params);
+    uploader.start()
     return uploader
   }
 }
 
-export default TcVod
+module.exports = TcVod

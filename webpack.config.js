@@ -4,6 +4,7 @@ module.exports = {
   mode: 'production',
   devtool: 'source-map',
   entry: './src/tc_vod.ts',
+  watch: true,
   module: {
     rules: [
       {
@@ -17,7 +18,9 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   output: {
-    filename: 'tc_vod.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: 'vod-js-sdk-v6.js',
+    path: path.resolve(__dirname, 'dist'),
+    library: 'TcVod',
+    libraryTarget: 'umd',
   }
 };
