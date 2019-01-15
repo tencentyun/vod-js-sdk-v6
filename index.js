@@ -1,1 +1,1 @@
-module.exports = require('./dist/tc_vod')
+module.exports = require('./dist/vod-js-sdk-v6')
