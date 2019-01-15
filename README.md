@@ -6,6 +6,8 @@
 
 `npm install vod-js-sdk-v6`
 
+浏览器可使用 `dist/vod-js-sdk-v6.js`。
+
 ## TODO
 
 * 类型定义清晰

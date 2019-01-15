@@ -1,1 +1,0 @@
-module.exports = require('./dist/vod-js-sdk-v6')
