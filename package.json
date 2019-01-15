@@ -1,6 +1,6 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "tencent cloud vod js sdk v6",
   "main": "dist/vod-js-sdk-v6.js",
   "scripts": {
@@ -24,11 +24,9 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cos-js-sdk-v5": "^0.5.6",
-    "is": "^3.3.0",
     "js-sha1": "^0.6.0"
   },
   "devDependencies": {
-    "@types/is": "0.0.21",
     "@types/mocha": "^5.2.5",
     "@types/sha1": "^1.1.1",
     "espower-typescript": "^9.0.1",

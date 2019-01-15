@@ -24,6 +24,8 @@ describe('uploader.test.ts', () => {
       });
       assert(uploader.progress == util.noop)
     })
+
+    it('should fail when init params wrong')
   })
   describe('#genFileInfo', () => {
     it('should gen file info', () => {
@@ -52,7 +54,7 @@ describe('uploader.test.ts', () => {
           videoFile: fakeVideoFile,
           videoName: 11 as any
         });
-      }, /videoName只能是字符串类型/)
+      }, /videoName must be a string/)
 
       assert.throws(() => {
         const uploader = new Uploader({
@@ -60,7 +62,7 @@ describe('uploader.test.ts', () => {
           videoFile: fakeVideoFile,
           videoName: '*'
         });
-      }, /文件名不得包含/)
+      }, /Cant use these chars in filename/)
     })
   })
 })

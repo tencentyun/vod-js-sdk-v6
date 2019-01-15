@@ -1,10 +1,8 @@
 const sha1 = require('js-sha1')
 const COS = require('cos-js-sdk-v5')
 
-import * as is from 'is'
 import axios from 'axios'
 import util from './util'
-
 export type IGetSignature = () => Promise<string>
 export type TcVodFileInfo = { name: string, type: string, size: number }
 
@@ -51,18 +49,18 @@ interface IApplyData {
 
 export interface IUploader {
   getSignature: IGetSignature;
-  videoFile: File,
+
+  videoFile?: File,
+  coverFile?: File,
 
   cosSuccess?: Function,
   cosCoverSuccess?: Function,
   progress?: Function,
   coverProgress?: Function,
-  hashProgress?: Function,
-  coverHashProgress?: Function,
   allowAudio?: boolean,
   videoName?: string,
-  coverFile?: File,
   isTempSignature?: boolean,
+  fileId?: string,
 }
 
 class Uploader implements IUploader {
@@ -71,12 +69,14 @@ class Uploader implements IUploader {
   videoInfo: TcVodFileInfo;
   coverFile: File;
   coverInfo: TcVodFileInfo;
+
+  cos: any;
+  taskId: string;
   progress: Function;
   coverProgress: Function;
-  hashProgress: Function;
-  coverHashProgress: Function;
   cosSuccess: Function;
   cosCoverSuccess: Function;
+
   allowAudio: boolean = false;
   videoName: string;
   storageName: string;
@@ -86,10 +86,10 @@ class Uploader implements IUploader {
   donePromise: Promise<object>;
 
   applyRequestTimeout = 5000;
-  applyRequestRetry = 3;
+  applyRequestRetryCount = 3;
 
   commitRequestTimeout = 5000;
-  commitRequestRetry = 3;
+  commitRequestRetryCount = 3;
 
   // video types
   videoTypes = [
@@ -119,14 +119,13 @@ class Uploader implements IUploader {
 
     this.progress = params.progress || util.noop;
     this.coverProgress = params.coverProgress || util.noop;
-    this.hashProgress = params.hashProgress || util.noop;
-    this.coverHashProgress = params.coverHashProgress || util.noop;
     this.cosSuccess = params.cosSuccess || util.noop;
     this.cosCoverSuccess = params.cosCoverSuccess || util.noop;
     this.allowAudio = params.allowAudio;
     this.videoName = params.videoName;
     this.coverFile = params.coverFile;
     this.isTempSignature = params.isTempSignature;
+    this.fileId = params.fileId;
 
     this.genFileInfo()
     this.validateUploadParams()
@@ -134,10 +133,13 @@ class Uploader implements IUploader {
 
   // set storage
   setStorage(name: string, value: string) {
+    if (!name) {
+      return;
+    }
     if (this.getStorageNum() > 5) {
       return;
     }
-    var cname = 'webugc_' + sha1(name);
+    const cname = 'webugc_' + sha1(name);
     try {
       localStorage.setItem(cname, value);
     } catch (e) { }
@@ -145,8 +147,11 @@ class Uploader implements IUploader {
 
   // get storage
   getStorage(name: string) {
-    var cname = 'webugc_' + sha1(name);
-    var result = null;
+    if (!name) {
+      return;
+    }
+    const cname = 'webugc_' + sha1(name);
+    let result = null;
     try {
       result = localStorage.getItem(cname);
     } catch (e) { }
@@ -156,7 +161,10 @@ class Uploader implements IUploader {
 
   // delete storage
   delStorage(name: string) {
-    var cname = 'webugc_' + sha1(name);
+    if (!name) {
+      return;
+    }
+    const cname = 'webugc_' + sha1(name);
     try {
       localStorage.removeItem(cname);
     } catch (e) { }
@@ -178,24 +186,20 @@ class Uploader implements IUploader {
 
   // validate init params
   validateInitParams(params: IUploader) {
-    if (!is.fn(params.getSignature)) {
-      throw new Error('getSignature必须为函数');
+    if (!util.isFunction(params.getSignature)) {
+      throw new Error('getSignature must be a function');
     }
-    if (!util.isFile(params.videoFile)) {
-      throw new Error('videoFile必须为视频文件');
-    }
-
-    if (params.cosSuccess && !is.fn(params.cosSuccess)) {
-      throw new Error('success必须为函数');
+    if (params.videoFile && !util.isFile(params.videoFile)) {
+      throw new Error('videoFile must be a File');
     }
 
-    if (params.progress && !is.fn(params.progress)) {
-      throw new Error('progress必须为函数');
-    }
-    if (params.hashProgress && !is.fn(params.hashProgress)) {
-      throw new Error('hashProgress必须为函数');
+    if (params.cosSuccess && !util.isFunction(params.cosSuccess)) {
+      throw new Error('success must be a function');
     }
 
+    if (params.progress && !util.isFunction(params.progress)) {
+      throw new Error('progress must be a function');
+    }
   }
 
   // validate when init done
@@ -205,8 +209,12 @@ class Uploader implements IUploader {
     if (this.allowAudio) {
       allowVideoTypes = allowVideoTypes.concat(this.audioTypes);
     }
-    if (allowVideoTypes.indexOf(this.videoInfo.type.toUpperCase()) == -1) {
-      console.log("视频文件格式不正确，请参考 https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
+    if (this.videoInfo && allowVideoTypes.indexOf(this.videoInfo.type.toUpperCase()) == -1) {
+      console.log("Video type is wrong. Please infer to https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
+    }
+
+    if (this.coverInfo && this.imageTypes.indexOf(this.coverInfo.type.toUpperCase()) == -1) {
+      console.log("Image type is wrong. Please infer to https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
     }
   }
 
@@ -218,10 +226,10 @@ class Uploader implements IUploader {
       let videoName = '';
       //有指定视频名称，则用该名称
       if (this.videoName) {
-        if (!is.string(this.videoName)) {
-          throw new Error('videoName只能是字符串类型');
+        if (!util.isString(this.videoName)) {
+          throw new Error('videoName must be a string');
         } else if (/[:*?<>\"\\/|]/g.test(this.videoName)) {
-          throw new Error('文件名不得包含 \\ / : * ? " < > | 字符');
+          throw new Error('Cant use these chars in filename: \\ / : * ? " < > |');
         } else {
           videoName = this.videoName;
         }
@@ -249,10 +257,11 @@ class Uploader implements IUploader {
     }
   };
 
-  async applyUploadUGC(videoInfo: TcVodFileInfo, signature: string) {
+  async applyUploadUGC(signature: string, retryCount: number = 0) {
     const self = this;
 
     let sendParam: IApplyUpload;
+    const videoInfo = this.videoInfo;
     const coverInfo = this.coverInfo;
 
     if (videoInfo) {
@@ -284,15 +293,14 @@ class Uploader implements IUploader {
         'coverSize': coverInfo.size
       };
     } else {
-      throw ('参数存在问题，请检查后，再重试');
+      throw ('Wrong params, please check and try again');
     }
 
     function whenError(): any {
-      if (self.applyRequestRetry == 0) {
-        throw new Error(`apply upload 失败`)
+      if (self.applyRequestRetryCount == retryCount) {
+        throw new Error(`apply upload failed`)
       }
-      self.applyRequestRetry--;
-      return self.applyUploadUGC(videoInfo, signature);
+      return self.applyUploadUGC(signature, retryCount--);
     }
 
     let response;
@@ -307,7 +315,9 @@ class Uploader implements IUploader {
     const applyResult = response.data;
     if (applyResult.code == 0) {
       const vodSessionKey = applyResult.data.vodSessionKey;
-      this.setStorage(this.storageName, vodSessionKey);
+      if (this.videoFile) {
+        this.setStorage(this.storageName, vodSessionKey);
+      }
       return applyResult.data;
     } else {
       return whenError()
@@ -336,6 +346,7 @@ class Uploader implements IUploader {
         });
       }
     });
+    this.cos = cos;
 
     const uploadCosParams = [];
 
@@ -347,12 +358,12 @@ class Uploader implements IUploader {
         onProgress: function (progressData: any) {
           self.progress(progressData)
         },
-        onHashProgress: function (progressData: any) {
-          self.hashProgress(progressData);
-        },
         onSuccess: function (data: any) {
           self.cosSuccess(data)
         },
+        TaskReady: function (taskId: string) {
+          self.taskId = taskId
+        }
       }
       uploadCosParams.push(cosVideoParam)
     }
@@ -365,12 +376,10 @@ class Uploader implements IUploader {
         onProgress: function (progressData: any) {
           self.coverProgress(progressData)
         },
-        onHashProgress: function (progressData: any) {
-          self.coverHashProgress(progressData);
-        },
         onSuccess: function (data: any) {
           self.cosCoverSuccess(data)
         },
+        TaskReady: util.noop,
       }
       uploadCosParams.push(cosCoverParam)
     }
@@ -382,7 +391,7 @@ class Uploader implements IUploader {
           Region: uploadCosParam.region,
           Key: uploadCosParam.key,
           Body: uploadCosParam.file,
-          onHashProgress: uploadCosParam.onHashProgress,
+          TaskReady: uploadCosParam.TaskReady,
           onProgress: uploadCosParam.onProgress,
         }, function (err: any, data: any) {
           if (!err) {
@@ -398,17 +407,18 @@ class Uploader implements IUploader {
     return await Promise.all(uploadPromises)
   }
 
-  async commitUploadUGC(signature: string, vodSessionKey: string) {
+  async commitUploadUGC(signature: string, vodSessionKey: string, retryCount: number = 0) {
     const self = this;
 
-    this.delStorage(this.storageName);
+    if (this.videoFile) {
+      this.delStorage(this.storageName);
+    }
 
     function whenError(): any {
-      if (self.commitRequestRetry == 0) {
-        throw new Error('commit upload 失败')
+      if (self.commitRequestRetryCount == retryCount) {
+        throw new Error('commit upload failed')
       }
-      self.commitRequestRetry--;
-      return self.commitUploadUGC(signature, vodSessionKey)
+      return self.commitUploadUGC(signature, vodSessionKey, retryCount)
     }
 
     let response;
@@ -437,12 +447,12 @@ class Uploader implements IUploader {
 
   async _start() {
     const signature = await this.getSignature();
-    const applyData = await this.applyUploadUGC(this.videoInfo, signature);
+    const applyData = await this.applyUploadUGC(signature);
     await this.uploadToCos(applyData)
 
     let newSignature = signature
     if (this.isTempSignature) {
-      // 每次finish的时候都重新获取一遍，防止密钥失效
+      // get signature every time when finish if sig is temp.
       newSignature = await this.getSignature();
     }
     return await this.commitUploadUGC(newSignature, applyData.vodSessionKey)
@@ -453,7 +463,7 @@ class Uploader implements IUploader {
   }
 
   cancel() {
-
+    this.cos.cancelTask(this.taskId);
   }
 }
 
