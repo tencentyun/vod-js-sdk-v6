@@ -1,22 +1,24 @@
-# 腾讯云云点播 Web 端上传 SDK
+# vod-js-sdk-v6
 
-云点播文档： https://cloud.tencent.com/document/product/266
+Web SDK for Tencent Cloud Video Service
 
-## 安装
+Document: https://cloud.tencent.com/document/product/266
+
+## Install
 
 `npm install vod-js-sdk-v6`
 
-浏览器可使用 `dist/vod-js-sdk-v6.js`。
+For browser, there is a umd bundle: `dist/vod-js-sdk-v6.js`
 
-这个库用到了 Promise，如果在低版本浏览器使用，请自行引入全局 Promise。
+We use `Promise` in the source code. You should imoprt Promise polyfill when target legacy browsers.
 
-## demo
+## Demo
 
 demo https://tencentyun.github.io/vod-js-sdk-v6/
 
-demo 源码 https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.html
+demo source code https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.html
 
-## 用法
+## Usage
 
 
 
@@ -25,3 +27,4 @@ demo 源码 https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.h
 1. `git clone` this project
 2. `npm install`
 3. `npm run test`
+4. add more task cases

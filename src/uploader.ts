@@ -182,12 +182,12 @@ class Uploader implements IUploader {
   }
 
   genFileInfo() {
-    //视频
+    // video file info
     const videoFile = this.videoFile;
     if (videoFile) {
       const lastDotIndex = videoFile.name.lastIndexOf('.');
       let videoName = '';
-      //有指定视频名称，则用该名称
+      // if specified, use it.
       if (this.videoName) {
         if (!util.isString(this.videoName)) {
           throw new Error('videoName must be a string');
@@ -196,7 +196,7 @@ class Uploader implements IUploader {
         } else {
           videoName = this.videoName;
         }
-      } else { //不然，则用上传文件的name
+      } else { // else use the meta info of file
         videoName = videoFile.name.substring(0, lastDotIndex);
       }
       this.videoInfo = {
@@ -207,7 +207,7 @@ class Uploader implements IUploader {
       this.storageName = videoFile.name + '_' + videoFile.size;
     }
 
-    //封面
+    // cover file info
     const coverFile = this.coverFile;
     if (coverFile) {
       const coverName = coverFile.name;
@@ -241,13 +241,13 @@ class Uploader implements IUploader {
           'videoType': videoInfo.type,
           'videoSize': videoInfo.size
         };
-        if (coverInfo) { //有封面，则加上封面的参数（视频和封面一起上传）
+        if (coverInfo) { // upload video together with cover
           sendParam.coverName = coverInfo.name;
           sendParam.coverType = coverInfo.type;
           sendParam.coverSize = coverInfo.size;
         }
       }
-    } else if (this.fileId && coverInfo) { //指定fileid和封面，则一起上传
+    } else if (this.fileId && coverInfo) { // when change cover
       sendParam = {
         'signature': signature,
         'fileId': this.fileId,
@@ -283,7 +283,7 @@ class Uploader implements IUploader {
       }
       return applyResult.data;
     } else {
-      // 错误码 https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
+      // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
       if (applyResult.code === 10005) {
         this.delStorage(this.storageName)
       }
