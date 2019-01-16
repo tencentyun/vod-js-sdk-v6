@@ -320,6 +320,10 @@ class Uploader implements IUploader {
       }
       return applyResult.data;
     } else {
+      // 错误码 https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
+      if (applyResult.code === 10005) {
+        this.delStorage(this.storageName)
+      }
       return whenError()
     }
   }
