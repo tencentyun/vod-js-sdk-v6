@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
+    "outDir": "lib",
     "noImplicitAny": true,
     "noImplicitThis": true,
     "target": "es5",
     "sourceMap": true,
+    "declaration": true,
     "lib": [
       "dom",
       "es2015",
       "scripthost",
       "es2015.promise"
     ]
-  }
+  },
+  "include": ["src"]
 }

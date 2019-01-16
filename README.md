@@ -10,15 +10,11 @@
 
 这个库用到了 Promise，如果在低版本浏览器使用，请自行引入全局 Promise。
 
+## demo
+
+demo https://tencentyun.github.io/vod-js-sdk-v6/
+
+demo 源码 https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.html
+
 ## 用法
 
-可参照 https://tencentyun.github.io/vod-js-sdk-v6/ 的源码
-
-## TODO
-
-* [x] 类型定义清晰
-* [x] webpack打包
-* [x] 是否需要自行引入Promise
-* [x] 好好对照老代码的功能
-* 写完善的测试
-* [x] 去除所有中文

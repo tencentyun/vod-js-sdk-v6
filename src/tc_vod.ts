@@ -17,4 +17,4 @@ class TcVod {
   }
 }
 
-module.exports = TcVod
+export default TcVod

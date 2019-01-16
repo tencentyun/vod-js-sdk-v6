@@ -1,10 +1,10 @@
 const path = require('path');
+const DtsBundleWebpack = require('dts-bundle-webpack')
 
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
   entry: './src/tc_vod.ts',
-  watch: true,
   module: {
     rules: [
       {
@@ -18,6 +18,7 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   optimization: {
+    // 这个选项开启后会影响 ts sourcemap 的生成，调试了半天也不懂是为什么。
     occurrenceOrder: false,
   },
   output: {
@@ -25,5 +26,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     library: 'TcVod',
     libraryTarget: 'umd',
-  }
+  },
+  plugins: [
+  ]
 };

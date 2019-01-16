@@ -1,10 +1,15 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "tencent cloud vod js sdk v6",
-  "main": "dist/vod-js-sdk-v6.js",
+  "main": "lib/tc_vod.js",
+  "typings": "lib/tc_vod.d.ts",
   "scripts": {
-    "test": "make test"
+    "test": "NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+    "dev": "webpack --config webpack.config.js --watch",
+    "build": "webpack --config webpack.config.js",
+    "compile": "tsc -p tsconfig.json",
+    "prepublish": "npm run test && npm run build && npm run compile"
   },
   "repository": {
     "type": "git",
