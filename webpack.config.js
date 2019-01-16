@@ -17,6 +17,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
+  optimization: {
+    occurrenceOrder: false,
+  },
   output: {
     filename: 'vod-js-sdk-v6.js',
     path: path.resolve(__dirname, 'dist'),

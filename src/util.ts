@@ -4,11 +4,11 @@ function isFile(v: any) {
 }
 
 function isFunction(v: any) {
-  return Object.prototype.toString.call(v) == "[object Function]"
+  return typeof v === 'function'
 }
 
 function isString(v: any) {
-  return Object.prototype.toString.call(v) == "[object String]"
+  return typeof v === 'string'
 }
 
 function noop() {}

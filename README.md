@@ -12,7 +12,7 @@
 
 ## 用法
 
-可参照 https://video.cloud.tencent.com/sdk/ugcuploader_v6.html 的源码
+可参照 https://tencentyun.github.io/vod-js-sdk-v6/ 的源码
 
 ## TODO
 
