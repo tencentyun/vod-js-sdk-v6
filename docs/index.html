@@ -2,344 +2,344 @@
 <html>
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>QCloud VIDEO UGC UPLOAD SDK</title>
-	<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="//v3.bootcss.com/assets/css/docs.min.css">
-	<style type="text/css">
-		.text-danger {
-			color: red;
-		}
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QCloud VIDEO UGC UPLOAD SDK</title>
+  <link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="//v3.bootcss.com/assets/css/docs.min.css">
+  <style type="text/css">
+    .text-danger {
+      color: red;
+    }
 
-		.control-label {
-			text-align: left !important;
-		}
+    .control-label {
+      text-align: left !important;
+    }
 
-		#resultBox {
-			width: 100%;
-			height: 300px;
-			border: 1px solid #888;
-			padding: 5px;
-			overflow: auto;
-			margin-bottom: 20px;
-		}
+    #resultBox {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #888;
+      padding: 5px;
+      overflow: auto;
+      margin-bottom: 20px;
+    }
 
-		.uploaderMsgBox {
-			width: 100%;
-			border-bottom: 1px solid #888;
-		}
+    .uploaderMsgBox {
+      width: 100%;
+      border-bottom: 1px solid #888;
+    }
 
-		.cancel-upload {
-			text-decoration: none;
-			cursor: pointer;
-		}
-	</style>
+    .cancel-upload {
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
-	<div class="bs-docs-header" id="content">
-		<div class="container">
-			<h1>UGC-Uploader</h1>
-		</div>
-	</div>
-	<div class="container bs-docs-container" id="main-area">
-		<div class="row" style="padding:10px;">
-			<p>
-				1.示例中的签名是直接从demo后台获取签名。该 demo 对应的点播账号已开启防盗链功能，此视频分发 URL 仅限 2 个独立 IP 进行访问，有效期为 10 分钟。<br>
-				2.示例1点击“直接上传视频”按钮即可上传视频。<br>
-				3.示例2点击“添加视频”添加视频文件，点击“添加封面”添加封面文件，然后点击“上传视频和封面”按钮即可上传视频和封面。<br>
-				4.取消上传为取消上传中的视频，上传成功的视频不能取消上传。
-			</p>
-		</div>
+  <div class="bs-docs-header" id="content">
+    <div class="container">
+      <h1>UGC-Uploader</h1>
+    </div>
+  </div>
+  <div class="container bs-docs-container" id="main-area">
+    <div class="row" style="padding:10px;">
+      <p>
+        1.示例中的签名是直接从demo后台获取签名。该 demo 对应的点播账号已开启防盗链功能，此视频分发 URL 仅限 2 个独立 IP 进行访问，有效期为 10 分钟。<br>
+        2.示例1点击“直接上传视频”按钮即可上传视频。<br>
+        3.示例2点击“添加视频”添加视频文件，点击“添加封面”添加封面文件，然后点击“上传视频和封面”按钮即可上传视频和封面。<br>
+        4.取消上传为取消上传中的视频，上传成功的视频不能取消上传。
+      </p>
+    </div>
 
-		<form ref="vExample">
-			<input type="file" style="display:none;" ref="vExampleFile" @change="vExampleUpload" />
-		</form>
-		<div class="row" style="padding:10px;">
-			<h4>示例1：直接上传视频</h4>
-			<a href="javascript:void(0);" class="btn btn-outline" @click="vExampleAdd">直接上传视频</a>
-		</div>
+    <form ref="vExample">
+      <input type="file" style="display:none;" ref="vExampleFile" @change="vExampleUpload" />
+    </form>
+    <div class="row" style="padding:10px;">
+      <h4>示例1：直接上传视频</h4>
+      <a href="javascript:void(0);" class="btn btn-outline" @click="vExampleAdd">直接上传视频</a>
+    </div>
 
-		<form ref="vcExample">
-			<input type="file" style="display:none;" ref="vcExampleVideo" @change="setVcExampleVideoName()" />
-			<input type="file" style="display:none;" ref="vcExampleCover" @change="setVcExampleCoverName()" />
-		</form>
-		<div class="row" style="padding:10px;">
-			<h4>示例2：上传视频和封面</h4>
-			<a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddVideo">{{vcExampleVideoName || '添加视频'}}</a>
-			<a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddCover">{{vcExampleCoverName || '添加封面'}}</a>
-			<a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddUpload">上传视频和封面</a>
-		</div>
+    <form ref="vcExample">
+      <input type="file" style="display:none;" ref="vcExampleVideo" @change="setVcExampleVideoName()" />
+      <input type="file" style="display:none;" ref="vcExampleCover" @change="setVcExampleCoverName()" />
+    </form>
+    <div class="row" style="padding:10px;">
+      <h4>示例2：上传视频和封面</h4>
+      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddVideo">{{vcExampleVideoName || '添加视频'}}</a>
+      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddCover">{{vcExampleCoverName || '添加封面'}}</a>
+      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddUpload">上传视频和封面</a>
+    </div>
 
-		<form ref="cExample">
-			<input type="file" style="display:none;" ref="cExampleCover" @change="cExampleUpload" />
-		</form>
-		<div class="row form-group form-group-sm" style="padding:10px;">
-			<h4>示例3：修改封面</h4>
-			<label class="col-sm-1" style="padding: 0;">fileId：</label>
-			<div class="col-sm-4">
-				<input name="fileId" class="form-control" v-model="cExampleFileId"></input>
-			</div>
-			<div class="col-sm-4">
-				<a href="javascript:void(0);" class="btn btn-outline" @click="cExampleAddCover">修改封面</a>
-			</div>
-		</div>
-		<div class="row" id="resultBox">
-			<!-- 上传信息组件	 -->
-			<div class="uploaderMsgBox" v-for="uploaderInfo in uploaderInfos">
-				<div v-if="uploaderInfo.videoInfo">
-					视频名称：{{`${uploaderInfo.videoInfo.name}.${uploaderInfo.videoInfo.type}`}}；
-					上传进度：{{Math.floor(uploaderInfo.progress * 100) + '%'}}；
-					fileId：{{uploaderInfo.fileId}}；
-					上传结果：{{uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
-					<br>
-					地址：{{uploaderInfo.videoUrl}}；
-					<a href="javascript:void(0);" class="cancel-upload" v-if="!uploaderInfo.isVideoUploadSuccess" @click="uploaderInfo.cancel()">取消上传</a><br>
-				</div>
+    <form ref="cExample">
+      <input type="file" style="display:none;" ref="cExampleCover" @change="cExampleUpload" />
+    </form>
+    <div class="row form-group form-group-sm" style="padding:10px;">
+      <h4>示例3：修改封面</h4>
+      <label class="col-sm-1" style="padding: 0;">fileId：</label>
+      <div class="col-sm-4">
+        <input name="fileId" class="form-control" v-model="cExampleFileId"></input>
+      </div>
+      <div class="col-sm-4">
+        <a href="javascript:void(0);" class="btn btn-outline" @click="cExampleAddCover">修改封面</a>
+      </div>
+    </div>
+    <div class="row" id="resultBox">
+      <!-- 上传信息组件	 -->
+      <div class="uploaderMsgBox" v-for="uploaderInfo in uploaderInfos">
+        <div v-if="uploaderInfo.videoInfo">
+          视频名称：{{`${uploaderInfo.videoInfo.name}.${uploaderInfo.videoInfo.type}`}}；
+          上传进度：{{Math.floor(uploaderInfo.progress * 100) + '%'}}；
+          fileId：{{uploaderInfo.fileId}}；
+          上传结果：{{uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
+          <br>
+          地址：{{uploaderInfo.videoUrl}}；
+          <a href="javascript:void(0);" class="cancel-upload" v-if="!uploaderInfo.isVideoUploadSuccess" @click="uploaderInfo.cancel()">取消上传</a><br>
+        </div>
 
-				<div v-if="uploaderInfo.coverInfo">
-					封面名称：{{uploaderInfo.coverInfo.name}}；
-					上传进度：{{Math.floor(uploaderInfo.coverProgress * 100) + '%'}}；
-					上传结果：{{uploaderInfo.isCoverUploadSuccess ? '上传成功' : '上传中'}}；
-					<br>
-					地址：{{uploaderInfo.coverUrl}}；
-					<br>
-				</div>
-			</div>
-		</div>
+        <div v-if="uploaderInfo.coverInfo">
+          封面名称：{{uploaderInfo.coverInfo.name}}；
+          上传进度：{{Math.floor(uploaderInfo.coverProgress * 100) + '%'}}；
+          上传结果：{{uploaderInfo.isCoverUploadSuccess ? '上传成功' : '上传中'}}；
+          <br>
+          地址：{{uploaderInfo.coverUrl}}；
+          <br>
+        </div>
+      </div>
+    </div>
 
-	</div>
-	<script src="//unpkg.com/vod-js-sdk-v6"></script>
-	<script src="//cdn.bootcss.com/vue/2.5.21/vue.js"></script>
-	<script src="//cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+  </div>
+  <script src="//unpkg.com/vod-js-sdk-v6"></script>
+  <script src="//cdn.bootcss.com/vue/2.5.21/vue.js"></script>
+  <script src="//cdn.bootcss.com/axios/0.18.0/axios.js"></script>
 
-	<script type="text/javascript">
+  <script type="text/javascript">
 
-		; (function () {
+    ; (function () {
 
-			/**
-			 * 计算签名
-			**/
-			async function getSignature() {
-				const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
-					"Action": "GetUgcUploadSign"
-				}))
-				try {
-					const sign = response.data.data.sign
-					return sign
-				} catch (e) {
-					throw new Error('获取签名失败')
-				}
-			};
+      /**
+       * 计算签名
+      **/
+      async function getSignature() {
+        const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
+          "Action": "GetUgcUploadSign"
+        }))
+        try {
+          const sign = response.data.data.sign
+          return sign
+        } catch (e) {
+          throw new Error('获取签名失败')
+        }
+      };
 
-			/*
-				防盗链地址获取
-			*/
-			async function getAntiLeechUrl(videoUrl, callback) {
-				const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
-					Action: "GetAntiLeechUrl",
-					Url: videoUrl,
-				}))
-				return response.data.data.url;
-			}
+      /*
+        防盗链地址获取
+      */
+      async function getAntiLeechUrl(videoUrl, callback) {
+        const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
+          Action: "GetAntiLeechUrl",
+          Url: videoUrl,
+        }))
+        return response.data.data.url;
+      }
 
-			const app = new Vue({
-				el: '#main-area',
-				data: {
-					uploaderInfos: [],
+      const app = new Vue({
+        el: '#main-area',
+        data: {
+          uploaderInfos: [],
 
-					vcExampleVideoName: '',
-					vcExampleCoverName: '',
+          vcExampleVideoName: '',
+          vcExampleCoverName: '',
 
-					cExampleFileId: '',
-				},
-				created() {
-					this.tcVod = new TcVod.default({
-						getSignature: getSignature
-					})
-				},
-				methods: {
-					/**
-					 * vExample示例。添加视频
-					**/
-					vExampleAdd() {
-						this.$refs.vExampleFile.click()
-					},
-					/**
-					 * vExample示例。上传视频过程。
-					**/
-					async vExampleUpload() {
-						const videoFile = this.$refs.vExampleFile.files[0]
+          cExampleFileId: '',
+        },
+        created() {
+          this.tcVod = new TcVod.default({
+            getSignature: getSignature
+          })
+        },
+        methods: {
+          /**
+           * vExample示例。添加视频
+          **/
+          vExampleAdd() {
+            this.$refs.vExampleFile.click()
+          },
+          /**
+           * vExample示例。上传视频过程。
+          **/
+          async vExampleUpload() {
+            const videoFile = this.$refs.vExampleFile.files[0]
 
-						var uploader = this.tcVod.upload({
-							videoFile: videoFile,
-							allowAudio: true,
-							cosSuccess(info) {
-								uploaderInfo.isVideoUploadSuccess = true;
-							},
-							progress(info) {
-								uploaderInfo.progress = info.percent;
-							},
-						})
+            var uploader = this.tcVod.upload({
+              videoFile: videoFile,
+              allowAudio: true,
+              cosSuccess(info) {
+                uploaderInfo.isVideoUploadSuccess = true;
+              },
+              progress(info) {
+                uploaderInfo.progress = info.percent;
+              },
+            })
 
-						console.log(uploader, 'uploader')
+            console.log(uploader, 'uploader')
 
-						const uploaderInfo = {
-							videoInfo: uploader.videoInfo,
-							isVideoUploadSuccess: false,
-							progress: 0,
-							fileId: '',
-							videoUrl: '',
-							cancel() {
-								uploader.cancel()
-							},
-						}
+            const uploaderInfo = {
+              videoInfo: uploader.videoInfo,
+              isVideoUploadSuccess: false,
+              progress: 0,
+              fileId: '',
+              videoUrl: '',
+              cancel() {
+                uploader.cancel()
+              },
+            }
 
-						this.uploaderInfos.push(uploaderInfo)
+            this.uploaderInfos.push(uploaderInfo)
 
-						const doneResult = await uploader.done()
-						console.log('doneResult', doneResult)
+            const doneResult = await uploader.done()
+            console.log('doneResult', doneResult)
 
-						uploaderInfo.fileId = doneResult.fileId;
+            uploaderInfo.fileId = doneResult.fileId;
 
-						uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
+            uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
 
-						this.$refs.vExample.reset();
-					},
+            this.$refs.vExample.reset();
+          },
 
-					setVcExampleVideoName() {
-						this.vcExampleVideoName = this.$refs.vcExampleVideo.files[0].name;
-					},
-					setVcExampleCoverName() {
-						this.vcExampleCoverName = this.$refs.vcExampleCover.files[0].name;
-					},
-					/*
-						vcExample添加视频
-					*/
-					vcExampleAddVideo() {
-						this.$refs.vcExampleVideo.click()
-					},
-					/*
-						vcExample添加封面
-					*/
-					vcExampleAddCover() {
-						this.$refs.vcExampleCover.click()
-					},
-					/*
-						vcExample上传过程
-					*/
-					async vcExampleAddUpload() {
-						const videoFile = this.$refs.vcExampleVideo.files[0];
-						const coverFile = this.$refs.vcExampleCover.files[0];
+          setVcExampleVideoName() {
+            this.vcExampleVideoName = this.$refs.vcExampleVideo.files[0].name;
+          },
+          setVcExampleCoverName() {
+            this.vcExampleCoverName = this.$refs.vcExampleCover.files[0].name;
+          },
+          /*
+            vcExample添加视频
+          */
+          vcExampleAddVideo() {
+            this.$refs.vcExampleVideo.click()
+          },
+          /*
+            vcExample添加封面
+          */
+          vcExampleAddCover() {
+            this.$refs.vcExampleCover.click()
+          },
+          /*
+            vcExample上传过程
+          */
+          async vcExampleAddUpload() {
+            const videoFile = this.$refs.vcExampleVideo.files[0];
+            const coverFile = this.$refs.vcExampleCover.files[0];
 
-						var uploader = this.tcVod.upload({
-							videoFile: videoFile,
-							coverFile: coverFile,
-							allowAudio: true,
-							cosSuccess(info) {
-								uploaderInfo.isVideoUploadSuccess = true;
-							},
-							progress(info) {
-								uploaderInfo.progress = info.percent;
-							},
-							cosCoverSuccess(info) {
-								uploaderInfo.isCoverUploadSuccess = true;
-							},
-							coverProgress(info) {
-								uploaderInfo.coverProgress = info.percent;
-							},
-						})
-						console.log(uploader, 'uploader')
+            var uploader = this.tcVod.upload({
+              videoFile: videoFile,
+              coverFile: coverFile,
+              allowAudio: true,
+              cosSuccess(info) {
+                uploaderInfo.isVideoUploadSuccess = true;
+              },
+              progress(info) {
+                uploaderInfo.progress = info.percent;
+              },
+              cosCoverSuccess(info) {
+                uploaderInfo.isCoverUploadSuccess = true;
+              },
+              coverProgress(info) {
+                uploaderInfo.coverProgress = info.percent;
+              },
+            })
+            console.log(uploader, 'uploader')
 
-						const uploaderInfo = {
-							videoInfo: uploader.videoInfo,
-							coverInfo: uploader.coverInfo,
-							isVideoUploadSuccess: false,
-							isCoverUploadSuccess: false,
-							progress: 0,
-							coverProgress: 0,
-							fileId: '',
-							videoUrl: '',
-							coverUrl: '',
-							cancel() {
-								uploader.cancel()
-							},
-						}
+            const uploaderInfo = {
+              videoInfo: uploader.videoInfo,
+              coverInfo: uploader.coverInfo,
+              isVideoUploadSuccess: false,
+              isCoverUploadSuccess: false,
+              progress: 0,
+              coverProgress: 0,
+              fileId: '',
+              videoUrl: '',
+              coverUrl: '',
+              cancel() {
+                uploader.cancel()
+              },
+            }
 
-						this.uploaderInfos.push(uploaderInfo)
+            this.uploaderInfos.push(uploaderInfo)
 
-						const doneResult = await uploader.done()
-						console.log('doneResult', doneResult)
+            const doneResult = await uploader.done()
+            console.log('doneResult', doneResult)
 
-						uploaderInfo.fileId = doneResult.fileId;
+            uploaderInfo.fileId = doneResult.fileId;
 
-						uploaderInfo.coverUrl = doneResult.cover.url;
-						uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
+            uploaderInfo.coverUrl = doneResult.cover.url;
+            uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
 
-						this.$refs.vcExample.reset();
-						this.vcExampleVideoName = ''
-						this.vcExampleCoverName = ''
-					},
+            this.$refs.vcExample.reset();
+            this.vcExampleVideoName = ''
+            this.vcExampleCoverName = ''
+          },
 
 
-					// cExample 添加封面
-					cExampleAddCover() {
-						this.$refs.cExampleCover.click()
-					},
-					// cExample 上传过程
-					async cExampleUpload() {
-						const coverFile = this.$refs.cExampleCover.files[0];
+          // cExample 添加封面
+          cExampleAddCover() {
+            this.$refs.cExampleCover.click()
+          },
+          // cExample 上传过程
+          async cExampleUpload() {
+            const coverFile = this.$refs.cExampleCover.files[0];
 
-						var uploader = this.tcVod.upload({
-							fileId: this.cExampleFileId,
-							coverFile: coverFile,
-							cosCoverSuccess(info) {
-								uploaderInfo.isCoverUploadSuccess = true;
-							},
-							coverProgress(info) {
-								uploaderInfo.coverProgress = info.percent;
-							},
-						})
-						console.log(uploader, 'uploader')
+            var uploader = this.tcVod.upload({
+              fileId: this.cExampleFileId,
+              coverFile: coverFile,
+              cosCoverSuccess(info) {
+                uploaderInfo.isCoverUploadSuccess = true;
+              },
+              coverProgress(info) {
+                uploaderInfo.coverProgress = info.percent;
+              },
+            })
+            console.log(uploader, 'uploader')
 
-						const uploaderInfo = {
-							coverInfo: uploader.coverInfo,
-							isCoverUploadSuccess: false,
-							coverProgress: 0,
-							coverUrl: '',
-							cancel() {
-								uploader.cancel()
-							},
-						}
+            const uploaderInfo = {
+              coverInfo: uploader.coverInfo,
+              isCoverUploadSuccess: false,
+              coverProgress: 0,
+              coverUrl: '',
+              cancel() {
+                uploader.cancel()
+              },
+            }
 
-						this.uploaderInfos.push(uploaderInfo)
+            this.uploaderInfos.push(uploaderInfo)
 
-						const doneResult = await uploader.done()
-						console.log('doneResult', doneResult)
+            const doneResult = await uploader.done()
+            console.log('doneResult', doneResult)
 
-						uploaderInfo.coverUrl = doneResult.cover.url;
+            uploaderInfo.coverUrl = doneResult.cover.url;
 
-						this.$refs.cExample.reset();
-					},
-				},
-			})
-		})();
+            this.$refs.cExample.reset();
+          },
+        },
+      })
+    })();
 
-	</script>
+  </script>
 
-	<script>
-		; (function () {
-			var mta = document.createElement("script");
-			mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.2";
-			mta.setAttribute("name", "MTAH5");
-			mta.setAttribute("sid", "500586412");
-			var s = document.getElementsByTagName("script")[0];
-			s.parentNode.insertBefore(mta, s);
-		})();
-	</script>
+  <script>
+    ; (function () {
+      var mta = document.createElement("script");
+      mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.2";
+      mta.setAttribute("name", "MTAH5");
+      mta.setAttribute("sid", "500586412");
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(mta, s);
+    })();
+  </script>
 </body>
 
 </html>

@@ -18,3 +18,10 @@ demo 源码 https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.h
 
 ## 用法
 
+
+
+## Contributing
+
+1. `git clone` this project
+2. `npm install`
+3. `npm run test`

@@ -91,26 +91,6 @@ class Uploader implements IUploader {
   commitRequestTimeout = 5000;
   commitRequestRetryCount = 3;
 
-  // video types
-  videoTypes = [
-    'WMV', 'WM', 'ASF', 'ASX', // microsoft types
-    'RM', 'RMVB', 'RA', 'RAM', // real types
-    'MPG', 'MPEG', 'MPE', 'VOB', 'DAT', // mpeg types
-    'MOV', '3GP', 'MP4', 'MP4V', 'M4V', 'MKV', 'AVI', 'FLV', 'F4V' // other types
-  ];
-
-  // audio types
-  audioTypes = ['MP3', 'WMA', 'WAV', 'ASF', 'AU', 'SND', 'RAW', 'AFC', 'ACC'];
-
-  // pic types
-  imageTypes = [
-    'JPG', 'JPEG', 'JPE',
-    'PSD',
-    'SVG', 'SVGZ',
-    'TIFF', 'TIF',
-    'BMP', 'GIF', 'PNG'
-  ];
-
   constructor(params: IUploader) {
     this.validateInitParams(params);
 
@@ -128,7 +108,6 @@ class Uploader implements IUploader {
     this.fileId = params.fileId;
 
     this.genFileInfo()
-    this.validateUploadParams()
   }
 
   // set storage
@@ -199,22 +178,6 @@ class Uploader implements IUploader {
 
     if (params.progress && !util.isFunction(params.progress)) {
       throw new Error('progress must be a function');
-    }
-  }
-
-  // validate when init done
-  validateUploadParams() {
-    let allowVideoTypes = this.videoTypes
-    //视频格式过滤
-    if (this.allowAudio) {
-      allowVideoTypes = allowVideoTypes.concat(this.audioTypes);
-    }
-    if (this.videoInfo && allowVideoTypes.indexOf(this.videoInfo.type.toUpperCase()) == -1) {
-      console.log("Video type is wrong. Please infer to https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
-    }
-
-    if (this.coverInfo && this.imageTypes.indexOf(this.coverInfo.type.toUpperCase()) == -1) {
-      console.log("Image type is wrong. Please infer to https://cloud.tencent.com/document/product/266/2834#.E9.9F.B3.E8.A7.86.E9.A2.91.E4.B8.8A.E4.BC.A0");
     }
   }
 

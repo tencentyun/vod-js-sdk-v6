@@ -64,16 +64,12 @@ declare class Uploader implements IUploader {
     applyRequestRetryCount: number;
     commitRequestTimeout: number;
     commitRequestRetryCount: number;
-    videoTypes: string[];
-    audioTypes: string[];
-    imageTypes: string[];
     constructor(params: IUploader);
     setStorage(name: string, value: string): void;
     getStorage(name: string): string;
     delStorage(name: string): void;
     getStorageNum(): number;
     validateInitParams(params: IUploader): void;
-    validateUploadParams(): void;
     genFileInfo(): void;
     applyUploadUGC(signature: string, retryCount?: number): Promise<any>;
     uploadToCos(applyData: IApplyData): Promise<void[]>;
