@@ -86,6 +86,7 @@ class Uploader implements IUploader {
 
   commitRequestTimeout = 5000;
   commitRequestRetryCount = 3;
+  retryDelay = 1000;
 
   constructor(params: IUploader) {
     this.validateInitParams(params);
@@ -223,6 +224,7 @@ class Uploader implements IUploader {
 
     if (videoInfo) {
       const vodSessionKey = this.getStorage(this.storageName);
+      // resume from break point
       if (vodSessionKey) {
         sendParam = {
           'signature': signature,
@@ -241,7 +243,7 @@ class Uploader implements IUploader {
           sendParam.coverSize = coverInfo.size;
         }
       }
-    } else if (this.fileId && coverInfo) { // when change cover
+    } else if (this.fileId && coverInfo) { // alter cover
       sendParam = {
         'signature': signature,
         'fileId': this.fileId,
@@ -253,10 +255,12 @@ class Uploader implements IUploader {
       throw ('Wrong params, please check and try again');
     }
 
-    function whenError(): any {
+    async function whenError(): Promise<any> {
+      self.delStorage(self.storageName)
       if (self.applyRequestRetryCount == retryCount) {
         throw new Error(`apply upload failed`)
       }
+      await util.delay(self.retryDelay);
       return self.applyUploadUGC(signature, retryCount + 1);
     }
 
@@ -278,7 +282,6 @@ class Uploader implements IUploader {
       }
       return applyResult.data;
     } else {
-      this.delStorage(this.storageName)
       return whenError()
     }
   }
@@ -372,10 +375,11 @@ class Uploader implements IUploader {
       this.delStorage(this.storageName);
     }
 
-    function whenError(): any {
+    async function whenError(): Promise<any> {
       if (self.commitRequestRetryCount == retryCount) {
         throw new Error('commit upload failed')
       }
+      await util.delay(self.retryDelay);
       return self.commitUploadUGC(signature, vodSessionKey, retryCount + 1)
     }
 

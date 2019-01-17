@@ -13,9 +13,18 @@ function isString(v: any) {
 
 function noop() {}
 
+function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve()
+    }, ms);
+  })
+}
+
 export default {
   isFile,
   isFunction,
   isString,
   noop,
+  delay
 }

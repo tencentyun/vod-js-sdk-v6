@@ -60,6 +60,7 @@ declare class Uploader implements IUploader {
     applyRequestRetryCount: number;
     commitRequestTimeout: number;
     commitRequestRetryCount: number;
+    retryDelay: number;
     constructor(params: IUploader);
     setStorage(name: string, value: string): void;
     getStorage(name: string): string;

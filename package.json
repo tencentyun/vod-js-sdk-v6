@@ -1,12 +1,13 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "tencent cloud vod js sdk v6",
   "main": "lib/tc_vod.js",
   "unpkg": "dist/vod-js-sdk-v6.js",
   "typings": "lib/tc_vod.d.ts",
   "scripts": {
     "test": "NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+    "cover": "NODE_ENV=test nyc mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
     "dev": "webpack --config webpack.config.js --watch",
     "dist": "webpack --config webpack.config.js",
     "build": "npm run test && npm run dist && npm run compile",
@@ -41,10 +42,24 @@
     "jsdom-global": "^3.0.2",
     "mm": "^2.4.1",
     "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
     "power-assert": "^1.6.1",
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.2",
     "webpack": "^4.28.1",
     "webpack-cli": "^3.2.1"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
   }
 }

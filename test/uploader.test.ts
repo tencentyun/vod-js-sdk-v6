@@ -156,4 +156,25 @@ describe('uploader.test.ts', () => {
       }
     })
   })
+
+  describe('#applyUploadUGC', () => {
+    it('should retry', async () => {
+      const uploader = new Uploader({
+        getSignature: fakeGetSignature,
+        videoFile: fakeVideoFile
+      })
+      uploader.retryDelay = 100; // dont wait too long
+
+      let applyUploadUGCCalled = 0;
+
+      mm(axios, 'post', () => {
+        applyUploadUGCCalled++;
+        throw new Error()
+      })
+      await assert.rejects(async () => {
+        await uploader.applyUploadUGC('signature')
+      }, /apply upload failed/)
+      assert(applyUploadUGCCalled == 4)
+    })
+  })
 })
