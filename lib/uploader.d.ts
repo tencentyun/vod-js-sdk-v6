@@ -37,9 +37,7 @@ export interface IUploader {
     cosCoverSuccess?: Function;
     progress?: Function;
     coverProgress?: Function;
-    allowAudio?: boolean;
     videoName?: string;
-    isTempSignature?: boolean;
     fileId?: string;
 }
 declare class Uploader implements IUploader {
@@ -54,11 +52,9 @@ declare class Uploader implements IUploader {
     coverProgress: Function;
     cosSuccess: Function;
     cosCoverSuccess: Function;
-    allowAudio: boolean;
     videoName: string;
     storageName: string;
     fileId: string;
-    isTempSignature: boolean;
     donePromise: Promise<object>;
     applyRequestTimeout: number;
     applyRequestRetryCount: number;

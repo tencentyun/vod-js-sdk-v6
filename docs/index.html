@@ -112,38 +112,36 @@
     </div>
 
   </div>
-  <script src="//unpkg.com/vod-js-sdk-v6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
   <script src="//cdn.bootcss.com/vue/2.5.21/vue.js"></script>
   <script src="//cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+  <script src="//unpkg.com/vod-js-sdk-v6"></script>
 
   <script type="text/javascript">
 
-    ; (function () {
+    ;(function () {
 
       /**
        * 计算签名
       **/
-      async function getSignature() {
-        const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
+      function getSignature() {
+        return axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
           "Action": "GetUgcUploadSign"
-        }))
-        try {
-          const sign = response.data.data.sign
-          return sign
-        } catch (e) {
-          throw new Error('获取签名失败')
-        }
+        })).then(function (response) {
+          return response.data.data.sign
+        })
       };
 
       /*
         防盗链地址获取
       */
-      async function getAntiLeechUrl(videoUrl, callback) {
-        const response = await axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
+      function getAntiLeechUrl(videoUrl, callback) {
+        return axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
           Action: "GetAntiLeechUrl",
           Url: videoUrl,
-        }))
-        return response.data.data.url;
+        })).then(function (response) {
+          return response.data.data.url
+        })
       }
 
       const app = new Vue({
@@ -171,12 +169,12 @@
           /**
            * vExample示例。上传视频过程。
           **/
-          async vExampleUpload() {
+          vExampleUpload() {
+            const self = this;
             const videoFile = this.$refs.vExampleFile.files[0]
 
-            var uploader = this.tcVod.upload({
+            const uploader = this.tcVod.upload({
               videoFile: videoFile,
-              allowAudio: true,
               cosSuccess(info) {
                 uploaderInfo.isVideoUploadSuccess = true;
               },
@@ -200,14 +198,16 @@
 
             this.uploaderInfos.push(uploaderInfo)
 
-            const doneResult = await uploader.done()
-            console.log('doneResult', doneResult)
+            uploader.done().then(function(doneResult) {
+              console.log('doneResult', doneResult)
 
-            uploaderInfo.fileId = doneResult.fileId;
+              uploaderInfo.fileId = doneResult.fileId;
 
-            uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
-
-            this.$refs.vExample.reset();
+              return getAntiLeechUrl(doneResult.video.url);
+            }).then(function (videoUrl) {
+              uploaderInfo.videoUrl = videoUrl
+              self.$refs.vExample.reset();
+            })
           },
 
           setVcExampleVideoName() {
@@ -231,14 +231,15 @@
           /*
             vcExample上传过程
           */
-          async vcExampleAddUpload() {
+          vcExampleAddUpload() {
+            const self = this;
+
             const videoFile = this.$refs.vcExampleVideo.files[0];
             const coverFile = this.$refs.vcExampleCover.files[0];
 
-            var uploader = this.tcVod.upload({
+            const uploader = this.tcVod.upload({
               videoFile: videoFile,
               coverFile: coverFile,
-              allowAudio: true,
               cosSuccess(info) {
                 uploaderInfo.isVideoUploadSuccess = true;
               },
@@ -271,17 +272,19 @@
 
             this.uploaderInfos.push(uploaderInfo)
 
-            const doneResult = await uploader.done()
-            console.log('doneResult', doneResult)
+            uploader.done().then(function (doneResult) {
+              console.log('doneResult', doneResult)
 
-            uploaderInfo.fileId = doneResult.fileId;
+              uploaderInfo.fileId = doneResult.fileId;
 
-            uploaderInfo.coverUrl = doneResult.cover.url;
-            uploaderInfo.videoUrl = await getAntiLeechUrl(doneResult.video.url);
-
-            this.$refs.vcExample.reset();
-            this.vcExampleVideoName = ''
-            this.vcExampleCoverName = ''
+              uploaderInfo.coverUrl = doneResult.cover.url;
+              return getAntiLeechUrl(doneResult.video.url);
+            }).then(function (videoUrl) {
+              uploaderInfo.videoUrl = videoUrl
+              self.$refs.vcExample.reset();
+              self.vcExampleVideoName = ''
+              self.vcExampleCoverName = ''
+            })
           },
 
 
@@ -290,10 +293,12 @@
             this.$refs.cExampleCover.click()
           },
           // cExample 上传过程
-          async cExampleUpload() {
+          cExampleUpload() {
+            const self = this;
+
             const coverFile = this.$refs.cExampleCover.files[0];
 
-            var uploader = this.tcVod.upload({
+            const uploader = this.tcVod.upload({
               fileId: this.cExampleFileId,
               coverFile: coverFile,
               cosCoverSuccess(info) {
@@ -317,28 +322,18 @@
 
             this.uploaderInfos.push(uploaderInfo)
 
-            const doneResult = await uploader.done()
-            console.log('doneResult', doneResult)
+            uploader.done().then(function (doneResult) {
+              console.log('doneResult', doneResult)
 
-            uploaderInfo.coverUrl = doneResult.cover.url;
+              uploaderInfo.coverUrl = doneResult.cover.url;
 
-            this.$refs.cExample.reset();
+              self.$refs.cExample.reset();
+            })
           },
         },
       })
     })();
 
-  </script>
-
-  <script>
-    ; (function () {
-      var mta = document.createElement("script");
-      mta.src = "//pingjs.qq.com/h5/stats.js?v2.0.2";
-      mta.setAttribute("name", "MTAH5");
-      mta.setAttribute("sid", "500586412");
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(mta, s);
-    })();
   </script>
 </body>
 

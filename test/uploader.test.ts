@@ -38,7 +38,7 @@ describe('uploader.test.ts', () => {
       assert(uploader.videoInfo.size == 100);
     })
 
-    it('should use `videoName`', () => {
+    it('should use `videoName` param', () => {
       const uploader = new Uploader({
         getSignature: fakeGetSignature,
         videoFile: fakeVideoFile,
@@ -47,7 +47,7 @@ describe('uploader.test.ts', () => {
       assert(uploader.videoName == 'custom_video_name')
     })
 
-    it('should throw invalid `videoName`', () => {
+    it('should throw when invalid `videoName`', () => {
       assert.throws(() => {
         const uploader = new Uploader({
           getSignature: fakeGetSignature,

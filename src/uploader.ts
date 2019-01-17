@@ -57,9 +57,7 @@ export interface IUploader {
   cosCoverSuccess?: Function,
   progress?: Function,
   coverProgress?: Function,
-  allowAudio?: boolean,
   videoName?: string,
-  isTempSignature?: boolean,
   fileId?: string,
 }
 
@@ -77,11 +75,9 @@ class Uploader implements IUploader {
   cosSuccess: Function;
   cosCoverSuccess: Function;
 
-  allowAudio: boolean = false;
   videoName: string;
   storageName: string;
   fileId: string;
-  isTempSignature: boolean;
 
   donePromise: Promise<object>;
 
@@ -101,10 +97,8 @@ class Uploader implements IUploader {
     this.coverProgress = params.coverProgress || util.noop;
     this.cosSuccess = params.cosSuccess || util.noop;
     this.cosCoverSuccess = params.cosCoverSuccess || util.noop;
-    this.allowAudio = params.allowAudio;
     this.videoName = params.videoName;
     this.coverFile = params.coverFile;
-    this.isTempSignature = params.isTempSignature;
     this.fileId = params.fileId;
 
     this.genFileInfo()
@@ -151,10 +145,10 @@ class Uploader implements IUploader {
 
   // get all `webugc` prefix key
   getStorageNum() {
-    var num = 0;
+    let num = 0;
     try {
-      var reg = /^webugc_[0-9a-fA-F]{40}$/;
-      for (var i = 0; i < localStorage.length; i++) {
+      const reg = /^webugc_[0-9a-fA-F]{40}$/;
+      for (let i = 0; i < localStorage.length; i++) {
         if (reg.test(localStorage.key(i))) {
           num++;
         }
@@ -263,7 +257,7 @@ class Uploader implements IUploader {
       if (self.applyRequestRetryCount == retryCount) {
         throw new Error(`apply upload failed`)
       }
-      return self.applyUploadUGC(signature, retryCount--);
+      return self.applyUploadUGC(signature, retryCount + 1);
     }
 
     let response;
@@ -276,6 +270,7 @@ class Uploader implements IUploader {
     }
 
     const applyResult = response.data;
+    // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
     if (applyResult.code == 0) {
       const vodSessionKey = applyResult.data.vodSessionKey;
       if (this.videoFile) {
@@ -283,10 +278,7 @@ class Uploader implements IUploader {
       }
       return applyResult.data;
     } else {
-      // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
-      if (applyResult.code === 10005) {
-        this.delStorage(this.storageName)
-      }
+      this.delStorage(this.storageName)
       return whenError()
     }
   }
@@ -297,19 +289,18 @@ class Uploader implements IUploader {
     const cosParam = {
       bucket: applyData.storageBucket + '-' + applyData.storageAppId,
       region: applyData.storageRegionV5,
-      secretId: applyData.tempCertificate.secretId,
-      secretKey: applyData.tempCertificate.secretKey,
-      token: applyData.tempCertificate.token,
-      expiredTime: applyData.tempCertificate.expiredTime
     };
 
-    var cos = new COS({
-      getAuthorization: function (options: object, callback: Function) {
+    const cos = new COS({
+      getAuthorization: async function (options: object, callback: Function) {
+        const signature = await self.getSignature();
+        const applyData = await self.applyUploadUGC(signature);
+
         callback({
-          TmpSecretId: cosParam.secretId,
-          TmpSecretKey: cosParam.secretKey,
-          XCosSecurityToken: cosParam.token,
-          ExpiredTime: cosParam.expiredTime
+          TmpSecretId: applyData.tempCertificate.secretId,
+          TmpSecretKey: applyData.tempCertificate.secretKey,
+          XCosSecurityToken: applyData.tempCertificate.token,
+          ExpiredTime: applyData.tempCertificate.expiredTime
         });
       }
     });
@@ -385,7 +376,7 @@ class Uploader implements IUploader {
       if (self.commitRequestRetryCount == retryCount) {
         throw new Error('commit upload failed')
       }
-      return self.commitUploadUGC(signature, vodSessionKey, retryCount)
+      return self.commitUploadUGC(signature, vodSessionKey, retryCount + 1)
     }
 
     let response;
@@ -417,11 +408,7 @@ class Uploader implements IUploader {
     const applyData = await this.applyUploadUGC(signature);
     await this.uploadToCos(applyData)
 
-    let newSignature = signature
-    if (this.isTempSignature) {
-      // get signature every time when finish if sig is temp.
-      newSignature = await this.getSignature();
-    }
+    const newSignature = await this.getSignature();
     return await this.commitUploadUGC(newSignature, applyData.vodSessionKey)
   }
 

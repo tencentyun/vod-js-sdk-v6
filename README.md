@@ -20,7 +20,7 @@ demo source code https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/in
 
 ## Usage
 
-
+See: https://cloud.tencent.com/document/product/266/9239
 
 ## Contributing
 
