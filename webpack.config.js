@@ -1,5 +1,4 @@
 const path = require('path');
-const DtsBundleWebpack = require('dts-bundle-webpack')
 
 module.exports = {
   mode: 'production',

@@ -79,7 +79,7 @@ class Uploader implements IUploader {
   storageName: string;
   fileId: string;
 
-  donePromise: Promise<object>;
+  donePromise: Promise<any>;
 
   applyRequestTimeout = 5000;
   applyRequestRetryCount = 3;

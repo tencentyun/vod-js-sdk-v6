@@ -55,7 +55,7 @@ declare class Uploader implements IUploader {
     videoName: string;
     storageName: string;
     fileId: string;
-    donePromise: Promise<object>;
+    donePromise: Promise<any>;
     applyRequestTimeout: number;
     applyRequestRetryCount: number;
     commitRequestTimeout: number;
@@ -72,7 +72,7 @@ declare class Uploader implements IUploader {
     commitUploadUGC(signature: string, vodSessionKey: string, retryCount?: number): Promise<any>;
     start(): void;
     _start(): Promise<any>;
-    done(): Promise<object>;
+    done(): Promise<any>;
     cancel(): void;
 }
 export default Uploader;
