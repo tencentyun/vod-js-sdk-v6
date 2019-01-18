@@ -91,7 +91,7 @@
       <!-- 上传信息组件	 -->
       <div class="uploaderMsgBox" v-for="uploaderInfo in uploaderInfos">
         <div v-if="uploaderInfo.videoInfo">
-          视频名称：{{`${uploaderInfo.videoInfo.name}.${uploaderInfo.videoInfo.type}`}}；
+          视频名称：{{uploaderInfo.videoInfo.name + '.' + uploaderInfo.videoInfo.type}}；
           上传进度：{{Math.floor(uploaderInfo.progress * 100) + '%'}}；
           fileId：{{uploaderInfo.fileId}}；
           上传结果：{{uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
