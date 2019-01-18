@@ -327,10 +327,10 @@ class Uploader extends EventEmitter implements IUploader {
         }, function (err: any, data: any) {
           if (!err) {
             uploadCosParam.onUpload(data);
-            resolve()
-          } else {
-            reject(err);
+            return resolve()
           }
+          self.delStorage(self.sessionName)
+          reject(err);
         });
       })
     })
