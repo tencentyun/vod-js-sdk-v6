@@ -1,9 +1,17 @@
+/// <reference types="node" />
+import { EventEmitter } from 'events';
 export declare type IGetSignature = () => Promise<string>;
 export declare type TcVodFileInfo = {
     name: string;
     type: string;
     size: number;
 };
+export declare enum UploaderEvent {
+    video_progress = "video_progress",
+    video_upload = "video_upload",
+    cover_progress = "cover_progress",
+    cover_upload = "cover_upload"
+}
 interface IApplyData {
     "video": {
         "storageSignature": string;
@@ -33,14 +41,10 @@ export interface IUploader {
     getSignature: IGetSignature;
     videoFile?: File;
     coverFile?: File;
-    cosSuccess?: Function;
-    cosCoverSuccess?: Function;
-    progress?: Function;
-    coverProgress?: Function;
     videoName?: string;
     fileId?: string;
 }
-declare class Uploader implements IUploader {
+declare class Uploader extends EventEmitter implements IUploader {
     getSignature: IGetSignature;
     videoFile: File;
     videoInfo: TcVodFileInfo;
@@ -48,12 +52,8 @@ declare class Uploader implements IUploader {
     coverInfo: TcVodFileInfo;
     cos: any;
     taskId: string;
-    progress: Function;
-    coverProgress: Function;
-    cosSuccess: Function;
-    cosCoverSuccess: Function;
     videoName: string;
-    storageName: string;
+    sessionName: string;
     fileId: string;
     donePromise: Promise<any>;
     applyRequestTimeout: number;
@@ -65,7 +65,6 @@ declare class Uploader implements IUploader {
     setStorage(name: string, value: string): void;
     getStorage(name: string): string;
     delStorage(name: string): void;
-    getStorageNum(): number;
     validateInitParams(params: IUploader): void;
     genFileInfo(): void;
     applyUploadUGC(signature: string, retryCount?: number): Promise<any>;

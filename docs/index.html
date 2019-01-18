@@ -175,12 +175,12 @@
 
             var uploader = this.tcVod.upload({
               videoFile: videoFile,
-              cosSuccess: function (info) {
-                uploaderInfo.isVideoUploadSuccess = true;
-              },
-              progress: function (info) {
-                uploaderInfo.progress = info.percent;
-              },
+            })
+            uploader.on('video_progress', function (info) {
+              uploaderInfo.progress = info.percent;
+            })
+            uploader.on('video_upload', function (info) {
+              uploaderInfo.isVideoUploadSuccess = true;
             })
 
             console.log(uploader, 'uploader')
@@ -240,18 +240,18 @@
             var uploader = this.tcVod.upload({
               videoFile: videoFile,
               coverFile: coverFile,
-              cosSuccess: function(info) {
-                uploaderInfo.isVideoUploadSuccess = true;
-              },
-              progress: function(info) {
-                uploaderInfo.progress = info.percent;
-              },
-              cosCoverSuccess: function(info) {
-                uploaderInfo.isCoverUploadSuccess = true;
-              },
-              coverProgress: function(info) {
-                uploaderInfo.coverProgress = info.percent;
-              },
+            })
+            uploader.on('video_progress', function(info) {
+              uploaderInfo.progress = info.percent;
+            })
+            uploader.on('video_upload', function(info) {
+              uploaderInfo.isVideoUploadSuccess = true;
+            })
+            uploader.on('cover_progress', function(info) {
+              uploaderInfo.coverProgress = info.percent;
+            })
+            uploader.on('cover_upload', function(info) {
+              uploaderInfo.isCoverUploadSuccess = true;
             })
             console.log(uploader, 'uploader')
 
@@ -301,12 +301,12 @@
             var uploader = this.tcVod.upload({
               fileId: this.cExampleFileId,
               coverFile: coverFile,
-              cosCoverSuccess: function(info) {
-                uploaderInfo.isCoverUploadSuccess = true;
-              },
-              coverProgress: function(info) {
-                uploaderInfo.coverProgress = info.percent;
-              },
+            })
+            uploader.on('cover_progress', function(info) {
+              uploaderInfo.coverProgress = info.percent;
+            })
+            uploader.on('cover_upload', function(info) {
+              uploaderInfo.isCoverUploadSuccess = true;
             })
             console.log(uploader, 'uploader')
 

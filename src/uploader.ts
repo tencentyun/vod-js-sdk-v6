@@ -1,10 +1,18 @@
 const sha1 = require('js-sha1')
 const COS = require('cos-js-sdk-v5')
 
+import {EventEmitter} from 'events';
 import axios from 'axios'
 import util from './util'
 export type IGetSignature = () => Promise<string>
 export type TcVodFileInfo = { name: string, type: string, size: number }
+
+export enum UploaderEvent {
+  video_progress = 'video_progress',
+  video_upload = 'video_upload',
+  cover_progress = 'cover_progress',
+  cover_upload = 'cover_upload',
+}
 
 interface IApplyUpload {
   signature: string,
@@ -53,15 +61,11 @@ export interface IUploader {
   videoFile?: File,
   coverFile?: File,
 
-  cosSuccess?: Function,
-  cosCoverSuccess?: Function,
-  progress?: Function,
-  coverProgress?: Function,
   videoName?: string,
   fileId?: string,
 }
 
-class Uploader implements IUploader {
+class Uploader extends EventEmitter implements IUploader {
   getSignature: IGetSignature;
   videoFile: File;
   videoInfo: TcVodFileInfo;
@@ -70,13 +74,9 @@ class Uploader implements IUploader {
 
   cos: any;
   taskId: string;
-  progress: Function;
-  coverProgress: Function;
-  cosSuccess: Function;
-  cosCoverSuccess: Function;
 
   videoName: string;
-  storageName: string;
+  sessionName: string = '';
   fileId: string;
 
   donePromise: Promise<any>;
@@ -89,15 +89,12 @@ class Uploader implements IUploader {
   retryDelay = 1000;
 
   constructor(params: IUploader) {
+    super();
     this.validateInitParams(params);
 
     this.videoFile = params.videoFile;
     this.getSignature = params.getSignature;
 
-    this.progress = params.progress || util.noop;
-    this.coverProgress = params.coverProgress || util.noop;
-    this.cosSuccess = params.cosSuccess || util.noop;
-    this.cosCoverSuccess = params.cosCoverSuccess || util.noop;
     this.videoName = params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
@@ -110,9 +107,7 @@ class Uploader implements IUploader {
     if (!name) {
       return;
     }
-    if (this.getStorageNum() > 5) {
-      return;
-    }
+
     const cname = 'webugc_' + sha1(name);
     try {
       localStorage.setItem(cname, value);
@@ -144,20 +139,6 @@ class Uploader implements IUploader {
     } catch (e) { }
   }
 
-  // get all `webugc` prefix key
-  getStorageNum() {
-    let num = 0;
-    try {
-      const reg = /^webugc_[0-9a-fA-F]{40}$/;
-      for (let i = 0; i < localStorage.length; i++) {
-        if (reg.test(localStorage.key(i))) {
-          num++;
-        }
-      }
-    } catch (e) { }
-    return num;
-  }
-
   // validate init params
   validateInitParams(params: IUploader) {
     if (!util.isFunction(params.getSignature)) {
@@ -165,14 +146,6 @@ class Uploader implements IUploader {
     }
     if (params.videoFile && !util.isFile(params.videoFile)) {
       throw new Error('videoFile must be a File');
-    }
-
-    if (params.cosSuccess && !util.isFunction(params.cosSuccess)) {
-      throw new Error('success must be a function');
-    }
-
-    if (params.progress && !util.isFunction(params.progress)) {
-      throw new Error('progress must be a function');
     }
   }
 
@@ -199,7 +172,7 @@ class Uploader implements IUploader {
         type: videoFile.name.substring(lastDotIndex + 1).toLowerCase(),
         size: videoFile.size
       };
-      this.storageName = videoFile.name + '_' + videoFile.size;
+      this.sessionName += `${videoFile.name}_${videoFile.size};`
     }
 
     // cover file info
@@ -212,6 +185,7 @@ class Uploader implements IUploader {
         type: coverName.substring(coverLastDotIndex + 1).toLowerCase(),
         size: coverFile.size
       };
+      this.sessionName += `${coverFile.name}_${coverFile.size};`
     }
   };
 
@@ -221,27 +195,25 @@ class Uploader implements IUploader {
     let sendParam: IApplyUpload;
     const videoInfo = this.videoInfo;
     const coverInfo = this.coverInfo;
+    const vodSessionKey = this.getStorage(this.sessionName);
 
-    if (videoInfo) {
-      const vodSessionKey = this.getStorage(this.storageName);
-      // resume from break point
-      if (vodSessionKey) {
-        sendParam = {
-          'signature': signature,
-          'vodSessionKey': vodSessionKey
-        };
-      } else {
-        sendParam = {
-          'signature': signature,
-          'videoName': videoInfo.name,
-          'videoType': videoInfo.type,
-          'videoSize': videoInfo.size
-        };
-        if (coverInfo) { // upload video together with cover
-          sendParam.coverName = coverInfo.name;
-          sendParam.coverType = coverInfo.type;
-          sendParam.coverSize = coverInfo.size;
-        }
+    // resume from break point
+    if (vodSessionKey) {
+      sendParam = {
+        'signature': signature,
+        'vodSessionKey': vodSessionKey
+      };
+    } else if (videoInfo) {
+      sendParam = {
+        'signature': signature,
+        'videoName': videoInfo.name,
+        'videoType': videoInfo.type,
+        'videoSize': videoInfo.size
+      };
+      if (coverInfo) { // upload video together with cover
+        sendParam.coverName = coverInfo.name;
+        sendParam.coverType = coverInfo.type;
+        sendParam.coverSize = coverInfo.size;
       }
     } else if (this.fileId && coverInfo) { // alter cover
       sendParam = {
@@ -256,7 +228,7 @@ class Uploader implements IUploader {
     }
 
     async function whenError(): Promise<any> {
-      self.delStorage(self.storageName)
+      self.delStorage(self.sessionName)
       if (self.applyRequestRetryCount == retryCount) {
         throw new Error(`apply upload failed`)
       }
@@ -277,9 +249,7 @@ class Uploader implements IUploader {
     // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
     if (applyResult.code == 0) {
       const vodSessionKey = applyResult.data.vodSessionKey;
-      if (this.videoFile) {
-        this.setStorage(this.storageName, vodSessionKey);
-      }
+      this.setStorage(this.sessionName, vodSessionKey);
       return applyResult.data;
     } else {
       return whenError()
@@ -303,7 +273,7 @@ class Uploader implements IUploader {
           TmpSecretId: applyData.tempCertificate.secretId,
           TmpSecretKey: applyData.tempCertificate.secretKey,
           XCosSecurityToken: applyData.tempCertificate.token,
-          ExpiredTime: applyData.tempCertificate.expiredTime
+          ExpiredTime: applyData.tempCertificate.expiredTime,
         });
       }
     });
@@ -316,11 +286,11 @@ class Uploader implements IUploader {
         ...cosParam,
         file: this.videoFile,
         key: applyData.video.storagePath,
-        onProgress: function (progressData: any) {
-          self.progress(progressData)
+        onProgress: function (data: any) {
+          self.emit(UploaderEvent.video_progress, data);
         },
-        onSuccess: function (data: any) {
-          self.cosSuccess(data)
+        onUpload: function (data: any) {
+          self.emit(UploaderEvent.video_upload, data);
         },
         TaskReady: function (taskId: string) {
           self.taskId = taskId
@@ -334,11 +304,11 @@ class Uploader implements IUploader {
         ...cosParam,
         file: this.coverFile,
         key: applyData.cover.storagePath,
-        onProgress: function (progressData: any) {
-          self.coverProgress(progressData)
+        onProgress: function (data: any) {
+          self.emit(UploaderEvent.cover_progress, data);
         },
-        onSuccess: function (data: any) {
-          self.cosCoverSuccess(data)
+        onUpload: function (data: any) {
+          self.emit(UploaderEvent.cover_upload, data);
         },
         TaskReady: util.noop,
       }
@@ -356,7 +326,7 @@ class Uploader implements IUploader {
           onProgress: uploadCosParam.onProgress,
         }, function (err: any, data: any) {
           if (!err) {
-            uploadCosParam.onSuccess(data);
+            uploadCosParam.onUpload(data);
             resolve()
           } else {
             reject(err);
@@ -371,9 +341,7 @@ class Uploader implements IUploader {
   async commitUploadUGC(signature: string, vodSessionKey: string, retryCount: number = 0) {
     const self = this;
 
-    if (this.videoFile) {
-      this.delStorage(this.storageName);
-    }
+    this.delStorage(this.sessionName);
 
     async function whenError(): Promise<any> {
       if (self.commitRequestRetryCount == retryCount) {

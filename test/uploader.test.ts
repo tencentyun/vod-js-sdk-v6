@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import Uploader from '../src/uploader'
+import Uploader, {UploaderEvent} from '../src/uploader'
 import util from '../src/util'
 import * as mm from 'mm'
 import axios from 'axios'
@@ -29,7 +29,6 @@ describe('uploader.test.ts', () => {
         getSignature: fakeGetSignature,
         videoFile: fakeVideoFile,
       });
-      assert(uploader.progress == util.noop)
     })
 
     it('should fail when init params wrong', () => {
@@ -98,10 +97,14 @@ describe('uploader.test.ts', () => {
         },
         videoFile: fakeVideoFile,
         coverFile: fakeVideoFile,
-
-        cosSuccess: () => {shouldCalled.cosSuccess--},
-        cosCoverSuccess: () => {shouldCalled.cosCoverSuccess--},
       })
+      uploader.on(UploaderEvent.video_upload, () => {
+        shouldCalled.cosSuccess--
+      })
+      uploader.on(UploaderEvent.cover_upload, () => {
+        shouldCalled.cosCoverSuccess--
+      })
+
 
       // 拦截 applyUploadUGC 中的post请求
       const old_applyUploadUGC = uploader.applyUploadUGC;
