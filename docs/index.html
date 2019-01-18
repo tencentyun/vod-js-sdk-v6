@@ -144,7 +144,7 @@
         })
       }
 
-      const app = new Vue({
+      var app = new Vue({
         el: '#main-area',
         data: {
           uploaderInfos: [],
@@ -154,7 +154,7 @@
 
           cExampleFileId: '',
         },
-        created() {
+        created: function () {
           this.tcVod = new TcVod.default({
             getSignature: getSignature
           })
@@ -163,35 +163,35 @@
           /**
            * vExample示例。添加视频
           **/
-          vExampleAdd() {
+          vExampleAdd: function () {
             this.$refs.vExampleFile.click()
           },
           /**
            * vExample示例。上传视频过程。
           **/
-          vExampleUpload() {
-            const self = this;
-            const videoFile = this.$refs.vExampleFile.files[0]
+          vExampleUpload: function () {
+            var self = this;
+            var videoFile = this.$refs.vExampleFile.files[0]
 
-            const uploader = this.tcVod.upload({
+            var uploader = this.tcVod.upload({
               videoFile: videoFile,
-              cosSuccess(info) {
+              cosSuccess: function (info) {
                 uploaderInfo.isVideoUploadSuccess = true;
               },
-              progress(info) {
+              progress: function (info) {
                 uploaderInfo.progress = info.percent;
               },
             })
 
             console.log(uploader, 'uploader')
 
-            const uploaderInfo = {
+            var uploaderInfo = {
               videoInfo: uploader.videoInfo,
               isVideoUploadSuccess: false,
               progress: 0,
               fileId: '',
               videoUrl: '',
-              cancel() {
+              cancel: function() {
                 uploader.cancel()
               },
             }
@@ -210,52 +210,52 @@
             })
           },
 
-          setVcExampleVideoName() {
+          setVcExampleVideoName: function () {
             this.vcExampleVideoName = this.$refs.vcExampleVideo.files[0].name;
           },
-          setVcExampleCoverName() {
+          setVcExampleCoverName: function () {
             this.vcExampleCoverName = this.$refs.vcExampleCover.files[0].name;
           },
           /*
             vcExample添加视频
           */
-          vcExampleAddVideo() {
+          vcExampleAddVideo: function () {
             this.$refs.vcExampleVideo.click()
           },
           /*
             vcExample添加封面
           */
-          vcExampleAddCover() {
+          vcExampleAddCover: function () {
             this.$refs.vcExampleCover.click()
           },
           /*
             vcExample上传过程
           */
-          vcExampleAddUpload() {
-            const self = this;
+          vcExampleAddUpload: function () {
+            var self = this;
 
-            const videoFile = this.$refs.vcExampleVideo.files[0];
-            const coverFile = this.$refs.vcExampleCover.files[0];
+            var videoFile = this.$refs.vcExampleVideo.files[0];
+            var coverFile = this.$refs.vcExampleCover.files[0];
 
-            const uploader = this.tcVod.upload({
+            var uploader = this.tcVod.upload({
               videoFile: videoFile,
               coverFile: coverFile,
-              cosSuccess(info) {
+              cosSuccess: function(info) {
                 uploaderInfo.isVideoUploadSuccess = true;
               },
-              progress(info) {
+              progress: function(info) {
                 uploaderInfo.progress = info.percent;
               },
-              cosCoverSuccess(info) {
+              cosCoverSuccess: function(info) {
                 uploaderInfo.isCoverUploadSuccess = true;
               },
-              coverProgress(info) {
+              coverProgress: function(info) {
                 uploaderInfo.coverProgress = info.percent;
               },
             })
             console.log(uploader, 'uploader')
 
-            const uploaderInfo = {
+            var uploaderInfo = {
               videoInfo: uploader.videoInfo,
               coverInfo: uploader.coverInfo,
               isVideoUploadSuccess: false,
@@ -265,7 +265,7 @@
               fileId: '',
               videoUrl: '',
               coverUrl: '',
-              cancel() {
+              cancel: function () {
                 uploader.cancel()
               },
             }
@@ -289,33 +289,33 @@
 
 
           // cExample 添加封面
-          cExampleAddCover() {
+          cExampleAddCover: function() {
             this.$refs.cExampleCover.click()
           },
           // cExample 上传过程
-          cExampleUpload() {
-            const self = this;
+          cExampleUpload: function() {
+            var self = this;
 
-            const coverFile = this.$refs.cExampleCover.files[0];
+            var coverFile = this.$refs.cExampleCover.files[0];
 
-            const uploader = this.tcVod.upload({
+            var uploader = this.tcVod.upload({
               fileId: this.cExampleFileId,
               coverFile: coverFile,
-              cosCoverSuccess(info) {
+              cosCoverSuccess: function(info) {
                 uploaderInfo.isCoverUploadSuccess = true;
               },
-              coverProgress(info) {
+              coverProgress: function(info) {
                 uploaderInfo.coverProgress = info.percent;
               },
             })
             console.log(uploader, 'uploader')
 
-            const uploaderInfo = {
+            var uploaderInfo = {
               coverInfo: uploader.coverInfo,
               isCoverUploadSuccess: false,
               coverProgress: 0,
               coverUrl: '',
-              cancel() {
+              cancel: function () {
                 uploader.cancel()
               },
             }
