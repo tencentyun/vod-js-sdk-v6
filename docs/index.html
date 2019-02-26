@@ -122,7 +122,7 @@
     ;(function () {
 
       /**
-       * 计算签名
+       * 计算签名。
       **/
       function getSignature() {
         return axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
@@ -133,7 +133,7 @@
       };
 
       /*
-        防盗链地址获取
+        防盗链地址获取。这是腾讯云官网demo的特殊逻辑，用户可忽略此处。
       */
       function getAntiLeechUrl(videoUrl, callback) {
         return axios.post('https://demo.vod2.myqcloud.com/ugc-upload/', JSON.stringify({
