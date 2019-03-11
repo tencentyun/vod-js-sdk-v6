@@ -94,10 +94,10 @@
           视频名称：{{uploaderInfo.videoInfo.name + '.' + uploaderInfo.videoInfo.type}}；
           上传进度：{{Math.floor(uploaderInfo.progress * 100) + '%'}}；
           fileId：{{uploaderInfo.fileId}}；
-          上传结果：{{uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
+          上传结果：{{uploaderInfo.isVideoUploadCancel ? '已取消' : uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
           <br>
           地址：{{uploaderInfo.videoUrl}}；
-          <a href="javascript:void(0);" class="cancel-upload" v-if="!uploaderInfo.isVideoUploadSuccess" @click="uploaderInfo.cancel()">取消上传</a><br>
+          <a href="javascript:void(0);" class="cancel-upload" v-if="!uploaderInfo.isVideoUploadSuccess && !uploaderInfo.isVideoUploadCancel" @click="uploaderInfo.cancel()">取消上传</a><br>
         </div>
 
         <div v-if="uploaderInfo.coverInfo">
@@ -188,10 +188,12 @@
             var uploaderInfo = {
               videoInfo: uploader.videoInfo,
               isVideoUploadSuccess: false,
+              isVideoUploadCancel: false,
               progress: 0,
               fileId: '',
               videoUrl: '',
               cancel: function() {
+                uploaderInfo.isVideoUploadCancel = true;
                 uploader.cancel()
               },
             }
@@ -259,6 +261,7 @@
               videoInfo: uploader.videoInfo,
               coverInfo: uploader.coverInfo,
               isVideoUploadSuccess: false,
+              isVideoUploadCancel: false,
               isCoverUploadSuccess: false,
               progress: 0,
               coverProgress: 0,
@@ -266,6 +269,7 @@
               videoUrl: '',
               coverUrl: '',
               cancel: function () {
+                uploaderInfo.isVideoUploadCancel = true;
                 uploader.cancel()
               },
             }
