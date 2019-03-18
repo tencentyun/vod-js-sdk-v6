@@ -240,6 +240,7 @@ class Uploader extends EventEmitter implements IUploader {
     try {
       response = await axios.post('https://vod2.qcloud.com/v3/index.php?Action=ApplyUploadUGC', sendParam, {
         timeout: this.applyRequestTimeout,
+        withCredentials: false,
       })
     } catch (e) {
       return whenError()
@@ -355,9 +356,10 @@ class Uploader extends EventEmitter implements IUploader {
     try {
       response = await axios.post('https://vod2.qcloud.com/v3/index.php?Action=CommitUploadUGC', {
         'signature': signature,
-        'vodSessionKey': vodSessionKey
+        'vodSessionKey': vodSessionKey,
       }, {
           timeout: this.commitRequestTimeout,
+          withCredentials: false,
         })
     } catch (e) {
       return whenError()
