@@ -18,6 +18,8 @@ demo https://tencentyun.github.io/vod-js-sdk-v6/
 
 demo source code https://github.com/tencentyun/vod-js-sdk-v6/blob/master/docs/index.html
 
+troubleshooting https://github.com/tencentyun/vod-js-sdk-v6/wiki/%E5%B8%B8%E8%A7%81%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5
+
 ## Usage
 
 * NOTICE: Document may be outdated, but demo and source code are always latest*
