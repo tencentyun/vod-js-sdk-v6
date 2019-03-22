@@ -8,7 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>QCloud VIDEO UGC UPLOAD SDK</title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="/docs.min.css">
   <style type="text/css">
     .text-danger {
       color: red;
@@ -40,12 +39,12 @@
 </head>
 
 <body>
-  <div class="bs-docs-header" id="content">
+  <div id="content">
     <div class="container">
       <h1>UGC-Uploader</h1>
     </div>
   </div>
-  <div class="container bs-docs-container" id="main-area">
+  <div class="container" id="main-area">
     <div class="row" style="padding:10px;">
       <p>
         1.示例中的签名是直接从demo后台获取签名。该 demo 对应的点播账号已开启防盗链功能，此视频分发 URL 仅限 2 个独立 IP 进行访问，有效期为 10 分钟。<br>
@@ -60,7 +59,7 @@
     </form>
     <div class="row" style="padding:10px;">
       <h4>示例1：直接上传视频</h4>
-      <a href="javascript:void(0);" class="btn btn-outline" @click="vExampleAdd">直接上传视频</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vExampleAdd">直接上传视频</a>
     </div>
 
     <form ref="vcExample">
@@ -69,9 +68,9 @@
     </form>
     <div class="row" style="padding:10px;">
       <h4>示例2：上传视频和封面</h4>
-      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddVideo">{{vcExampleVideoName || '添加视频'}}</a>
-      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddCover">{{vcExampleCoverName || '添加封面'}}</a>
-      <a href="javascript:void(0);" class="btn btn-outline" @click="vcExampleAddUpload">上传视频和封面</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddVideo">{{vcExampleVideoName || '添加视频'}}</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddCover">{{vcExampleCoverName || '添加封面'}}</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddUpload">上传视频和封面</a>
     </div>
 
     <form ref="cExample">
@@ -84,7 +83,7 @@
         <input name="fileId" class="form-control" v-model="cExampleFileId"></input>
       </div>
       <div class="col-sm-4">
-        <a href="javascript:void(0);" class="btn btn-outline" @click="cExampleAddCover">修改封面</a>
+        <a href="javascript:void(0);" class="btn btn-default" @click="cExampleAddCover">修改封面</a>
       </div>
     </div>
     <div class="row" id="resultBox">
