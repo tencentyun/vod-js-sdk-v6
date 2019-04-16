@@ -4,6 +4,7 @@ const COS = require('cos-js-sdk-v5')
 import {EventEmitter} from 'events';
 import axios from 'axios'
 import util from './util'
+import { vodError } from './types';
 export type IGetSignature = () => Promise<string>
 export type TcVodFileInfo = { name: string, type: string, size: number }
 
@@ -227,9 +228,12 @@ class Uploader extends EventEmitter implements IUploader {
       throw ('Wrong params, please check and try again');
     }
 
-    async function whenError(): Promise<any> {
+    async function whenError(err?: vodError): Promise<any> {
       self.delStorage(self.sessionName)
       if (self.applyRequestRetryCount == retryCount) {
+        if (err) {
+          throw err
+        }
         throw new Error(`apply upload failed`)
       }
       await util.delay(self.retryDelay);
@@ -253,7 +257,10 @@ class Uploader extends EventEmitter implements IUploader {
       this.setStorage(this.sessionName, vodSessionKey);
       return applyResult.data;
     } else {
-      return whenError()
+      // return the apply result error info
+      const err: vodError = new Error(applyResult.message)
+      err.code = applyResult.code;
+      return whenError(err)
     }
   }
 
