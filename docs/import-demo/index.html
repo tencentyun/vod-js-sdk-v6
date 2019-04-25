@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QCloud VIDEO UGC UPLOAD SDK</title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+  <style type="text/css">
+    .text-danger {
+      color: red;
+    }
+
+    .control-label {
+      text-align: left !important;
+    }
+
+    #resultBox {
+      width: 100%;
+      height: 300px;
+      border: 1px solid #888;
+      padding: 5px;
+      overflow: auto;
+      margin-bottom: 20px;
+    }
+
+    .uploaderMsgBox {
+      width: 100%;
+      border-bottom: 1px solid #888;
+    }
+
+    .cancel-upload {
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="content">
+    <div class="container">
+      <h1>UGC-Uploader</h1>
+    </div>
+  </div>
+  <div class="container" id="main-area">
+    <div class="row" style="padding:10px;">
+      <p>
+        1.示例中的签名是直接从demo后台获取签名。该 demo 对应的点播账号已开启防盗链功能，此视频分发 URL 仅限 2 个独立 IP 进行访问，有效期为 10 分钟。<br>
+        2.示例1点击“直接上传视频”按钮即可上传视频。<br>
+        3.示例2点击“添加视频”添加视频文件，点击“添加封面”添加封面文件，然后点击“上传视频和封面”按钮即可上传视频和封面。<br>
+        4.取消上传为取消上传中的视频，上传成功的视频不能取消上传。
+      </p>
+    </div>
+
+    <form ref="vExample">
+      <input type="file" style="display:none;" ref="vExampleFile" @change="vExampleUpload" />
+    </form>
+    <div class="row" style="padding:10px;">
+      <h4>示例1：直接上传视频</h4>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vExampleAdd">直接上传视频</a>
+    </div>
+
+    <form ref="vcExample">
+      <input type="file" style="display:none;" ref="vcExampleVideo" @change="setVcExampleVideoName()" />
+      <input type="file" style="display:none;" ref="vcExampleCover" @change="setVcExampleCoverName()" />
+    </form>
+    <div class="row" style="padding:10px;">
+      <h4>示例2：上传视频和封面</h4>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddVideo">{{vcExampleVideoName || '添加视频'}}</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddCover">{{vcExampleCoverName || '添加封面'}}</a>
+      <a href="javascript:void(0);" class="btn btn-default" @click="vcExampleAddUpload">上传视频和封面</a>
+    </div>
+
+    <form ref="cExample">
+      <input type="file" style="display:none;" ref="cExampleCover" @change="cExampleUpload" />
+    </form>
+    <div class="row form-group form-group-sm" style="padding:10px;">
+      <h4>示例3：修改封面</h4>
+      <label class="col-sm-1" style="padding: 0;">fileId：</label>
+      <div class="col-sm-4">
+        <input name="fileId" class="form-control" v-model="cExampleFileId"></input>
+      </div>
+      <div class="col-sm-4">
+        <a href="javascript:void(0);" class="btn btn-default" @click="cExampleAddCover">修改封面</a>
+      </div>
+    </div>
+    <div class="row" id="resultBox">
+      <!-- 上传信息组件	 -->
+      <div class="uploaderMsgBox" v-for="uploaderInfo in uploaderInfos">
+        <div v-if="uploaderInfo.videoInfo">
+          视频名称：{{uploaderInfo.videoInfo.name + '.' + uploaderInfo.videoInfo.type}}；
+          上传进度：{{Math.floor(uploaderInfo.progress * 100) + '%'}}；
+          fileId：{{uploaderInfo.fileId}}；
+          上传结果：{{uploaderInfo.isVideoUploadCancel ? '已取消' : uploaderInfo.isVideoUploadSuccess ? '上传成功' : '上传中'}}；
+          <br>
+          地址：{{uploaderInfo.videoUrl}}；
+          <a href="javascript:void(0);" class="cancel-upload" v-if="!uploaderInfo.isVideoUploadSuccess && !uploaderInfo.isVideoUploadCancel" @click="uploaderInfo.cancel()">取消上传</a><br>
+        </div>
+
+        <div v-if="uploaderInfo.coverInfo">
+          封面名称：{{uploaderInfo.coverInfo.name}}；
+          上传进度：{{Math.floor(uploaderInfo.coverProgress * 100) + '%'}}；
+          上传结果：{{uploaderInfo.isCoverUploadSuccess ? '上传成功' : '上传中'}}；
+          <br>
+          地址：{{uploaderInfo.coverUrl}}；
+          <br>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="./bundle.js"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-26476625-7"></script>
+  <script>
+    // add by alsotang@gmail.com
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-26476625-7');
+  </script>
+
+</body>
+
+</html>
