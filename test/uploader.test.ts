@@ -9,7 +9,7 @@ const COS = require('cos-js-sdk-v5')
 const fakeGetSignature = async () => {
   return 'fakeGetSignature'
 }
-const fakeVideoFile:File = <File>{
+const fakeMediaFile:File = <File>{
   lastModified: null,
   name: 'vv.dd.mp4',
   size: 100,
@@ -24,10 +24,10 @@ describe('uploader.test.ts', () => {
     mm.restore()
   })
   describe('#new', function () {
-    it('should accept getSignature and videoFile', () => {
+    it('should accept getSignature and mediaFile', () => {
       const uploader = new Uploader({
         getSignature: fakeGetSignature,
-        videoFile: fakeVideoFile,
+        mediaFile: fakeMediaFile,
       });
     })
 
@@ -45,36 +45,36 @@ describe('uploader.test.ts', () => {
     it('should gen file info', () => {
       const uploader = new Uploader({
         getSignature: fakeGetSignature,
-        videoFile: fakeVideoFile,
+        mediaFile: fakeMediaFile,
       });
       assert(uploader.videoInfo.name == 'vv.dd')
       assert(uploader.videoInfo.type == 'mp4')
       assert(uploader.videoInfo.size == 100);
     })
 
-    it('should use `videoName` param', () => {
+    it('should use `mediaName` param', () => {
       const uploader = new Uploader({
         getSignature: fakeGetSignature,
-        videoFile: fakeVideoFile,
-        videoName: 'custom_video_name'
+        mediaFile: fakeMediaFile,
+        mediaName: 'custom_video_name'
       });
       assert(uploader.videoName == 'custom_video_name')
     })
 
-    it('should throw when invalid `videoName`', () => {
+    it('should throw when invalid `mediaName`', () => {
       assert.throws(() => {
         const uploader = new Uploader({
           getSignature: fakeGetSignature,
-          videoFile: fakeVideoFile,
-          videoName: 11 as any
+          mediaFile: fakeMediaFile,
+          mediaName: 11 as any
         });
-      }, /videoName must be a string/)
+      }, /mediaName must be a string/)
 
       assert.throws(() => {
         const uploader = new Uploader({
           getSignature: fakeGetSignature,
-          videoFile: fakeVideoFile,
-          videoName: '*'
+          mediaFile: fakeMediaFile,
+          mediaName: '*'
         });
       }, /Cant use these chars in filename/)
     })
@@ -95,8 +95,8 @@ describe('uploader.test.ts', () => {
           shouldCalled.getSignature--;
           return fakeGetSignature()
         },
-        videoFile: fakeVideoFile,
-        coverFile: fakeVideoFile,
+        mediaFile: fakeMediaFile,
+        coverFile: fakeMediaFile,
       })
       uploader.on(UploaderEvent.video_upload, () => {
         shouldCalled.cosSuccess--
@@ -164,7 +164,7 @@ describe('uploader.test.ts', () => {
     it('should retry', async () => {
       const uploader = new Uploader({
         getSignature: fakeGetSignature,
-        videoFile: fakeVideoFile
+        mediaFile: fakeMediaFile
       })
       uploader.retryDelay = 100; // dont wait too long
 

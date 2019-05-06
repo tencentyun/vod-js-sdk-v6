@@ -10,7 +10,11 @@ export type TcVodFileInfo = { name: string, type: string, size: number }
 
 export enum UploaderEvent {
   video_progress = 'video_progress',
+  media_progress = 'media_progress',
+
   video_upload = 'video_upload',
+  media_upload = 'media_upload',
+
   cover_progress = 'cover_progress',
   cover_upload = 'cover_upload',
 }
@@ -60,9 +64,11 @@ export interface IUploader {
   getSignature: IGetSignature;
 
   videoFile?: File,
+  mediaFile?: File,
   coverFile?: File,
 
   videoName?: string,
+  mediaName?: string,
   fileId?: string,
 }
 
@@ -93,10 +99,10 @@ class Uploader extends EventEmitter implements IUploader {
     super();
     this.validateInitParams(params);
 
-    this.videoFile = params.videoFile;
+    this.videoFile = params.mediaFile || params.videoFile;
     this.getSignature = params.getSignature;
 
-    this.videoName = params.videoName;
+    this.videoName = params.mediaName || params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
 
@@ -159,7 +165,7 @@ class Uploader extends EventEmitter implements IUploader {
       // if specified, use it.
       if (this.videoName) {
         if (!util.isString(this.videoName)) {
-          throw new Error('videoName must be a string');
+          throw new Error('mediaName must be a string');
         } else if (/[:*?<>\"\\/|]/g.test(this.videoName)) {
           throw new Error('Cant use these chars in filename: \\ / : * ? " < > |');
         } else {
@@ -296,9 +302,11 @@ class Uploader extends EventEmitter implements IUploader {
         key: applyData.video.storagePath,
         onProgress: function (data: any) {
           self.emit(UploaderEvent.video_progress, data);
+          self.emit(UploaderEvent.media_progress, data);
         },
         onUpload: function (data: any) {
           self.emit(UploaderEvent.video_upload, data);
+          self.emit(UploaderEvent.media_upload, data);
         },
         TaskReady: function (taskId: string) {
           self.taskId = taskId

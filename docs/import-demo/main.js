@@ -1,7 +1,6 @@
-import Vue from 'vue/dist/vue.js'
-import axios from 'axios'
-import TcVod from 'vod-js-sdk-v6'
-
+import Vue from "vue/dist/vue.js";
+import axios from "axios";
+import TcVod from "vod-js-sdk-v6";
 
 /**
  * 计算签名。
@@ -63,15 +62,15 @@ var app = new Vue({
      **/
     vExampleUpload: function() {
       var self = this;
-      var videoFile = this.$refs.vExampleFile.files[0];
+      var mediaFile = this.$refs.vExampleFile.files[0];
 
       var uploader = this.tcVod.upload({
-        videoFile: videoFile
+        mediaFile: mediaFile
       });
-      uploader.on("video_progress", function(info) {
+      uploader.on("media_progress", function(info) {
         uploaderInfo.progress = info.percent;
       });
-      uploader.on("video_upload", function(info) {
+      uploader.on("media_upload", function(info) {
         uploaderInfo.isVideoUploadSuccess = true;
       });
 
@@ -131,17 +130,17 @@ var app = new Vue({
     vcExampleAddUpload: function() {
       var self = this;
 
-      var videoFile = this.$refs.vcExampleVideo.files[0];
+      var mediaFile = this.$refs.vcExampleVideo.files[0];
       var coverFile = this.$refs.vcExampleCover.files[0];
 
       var uploader = this.tcVod.upload({
-        videoFile: videoFile,
+        mediaFile: mediaFile,
         coverFile: coverFile
       });
-      uploader.on("video_progress", function(info) {
+      uploader.on("media_progress", function(info) {
         uploaderInfo.progress = info.percent;
       });
-      uploader.on("video_upload", function(info) {
+      uploader.on("media_upload", function(info) {
         uploaderInfo.isVideoUploadSuccess = true;
       });
       uploader.on("cover_progress", function(info) {

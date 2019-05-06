@@ -8,7 +8,9 @@ export declare type TcVodFileInfo = {
 };
 export declare enum UploaderEvent {
     video_progress = "video_progress",
+    media_progress = "media_progress",
     video_upload = "video_upload",
+    media_upload = "media_upload",
     cover_progress = "cover_progress",
     cover_upload = "cover_upload"
 }
@@ -40,8 +42,10 @@ interface IApplyData {
 export interface IUploader {
     getSignature: IGetSignature;
     videoFile?: File;
+    mediaFile?: File;
     coverFile?: File;
     videoName?: string;
+    mediaName?: string;
     fileId?: string;
 }
 declare class Uploader extends EventEmitter implements IUploader {

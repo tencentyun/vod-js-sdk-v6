@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
-    "vod-js-sdk-v6": "^1.2.4",
+    "vod-js-sdk-v6": "^1.2.6",
     "vue": "^2.6.10"
   },
   "devDependencies": {
