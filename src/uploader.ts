@@ -253,7 +253,7 @@ class Uploader extends EventEmitter implements IUploader {
         withCredentials: false,
       })
     } catch (e) {
-      return whenError()
+      return whenError(e)
     }
 
     const applyResult = response.data;
@@ -359,8 +359,11 @@ class Uploader extends EventEmitter implements IUploader {
 
     this.delStorage(this.sessionName);
 
-    async function whenError(): Promise<any> {
+    async function whenError(err?: vodError): Promise<any> {
       if (self.commitRequestRetryCount == retryCount) {
+        if (err) {
+          throw err
+        }
         throw new Error('commit upload failed')
       }
       await util.delay(self.retryDelay);
@@ -377,14 +380,16 @@ class Uploader extends EventEmitter implements IUploader {
           withCredentials: false,
         })
     } catch (e) {
-      return whenError()
+      return whenError(e)
     }
 
     const commitResult = response.data;
     if (commitResult.code == 0) {
       return commitResult.data;
     } else {
-      return whenError();
+      const err: vodError = new Error(commitResult.message)
+      err.code = commitResult.code;
+      return whenError(err)
     }
   }
 

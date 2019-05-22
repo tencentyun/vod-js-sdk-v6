@@ -172,11 +172,11 @@ describe('uploader.test.ts', () => {
 
       mm(axios, 'post', () => {
         applyUploadUGCCalled++;
-        throw new Error()
+        throw new Error('fake post error')
       })
       await assert.rejects(async () => {
         await uploader.applyUploadUGC('signature')
-      }, /apply upload failed/)
+      }, /fake post error/)
       assert(applyUploadUGCCalled == 4)
     })
   })
