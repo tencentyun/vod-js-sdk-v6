@@ -71,9 +71,9 @@ declare class Uploader extends EventEmitter implements IUploader {
     delStorage(name: string): void;
     validateInitParams(params: IUploader): void;
     genFileInfo(): void;
-    applyUploadUGC(signature: string, retryCount?: number): Promise<any>;
+    applyUploadUGC(retryCount?: number): Promise<any>;
     uploadToCos(applyData: IApplyData): Promise<void[]>;
-    commitUploadUGC(signature: string, vodSessionKey: string, retryCount?: number): Promise<any>;
+    commitUploadUGC(vodSessionKey: string, retryCount?: number): Promise<any>;
     start(): void;
     _start(): Promise<any>;
     done(): Promise<any>;

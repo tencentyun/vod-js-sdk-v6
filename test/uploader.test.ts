@@ -175,7 +175,7 @@ describe('uploader.test.ts', () => {
         throw new Error('fake post error')
       })
       await assert.rejects(async () => {
-        await uploader.applyUploadUGC('signature')
+        await uploader.applyUploadUGC()
       }, /fake post error/)
       assert(applyUploadUGCCalled == 4)
     })

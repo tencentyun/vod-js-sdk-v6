@@ -196,8 +196,10 @@ class Uploader extends EventEmitter implements IUploader {
     }
   };
 
-  async applyUploadUGC(signature: string, retryCount: number = 0) {
+  async applyUploadUGC(retryCount: number = 0) {
     const self = this;
+
+    const signature = await this.getSignature();
 
     let sendParam: IApplyUpload;
     const videoInfo = this.videoInfo;
@@ -243,7 +245,7 @@ class Uploader extends EventEmitter implements IUploader {
         throw new Error(`apply upload failed`)
       }
       await util.delay(self.retryDelay);
-      return self.applyUploadUGC(signature, retryCount + 1);
+      return self.applyUploadUGC(retryCount + 1);
     }
 
     let response;
@@ -280,8 +282,7 @@ class Uploader extends EventEmitter implements IUploader {
 
     const cos = new COS({
       getAuthorization: async function (options: object, callback: Function) {
-        const signature = await self.getSignature();
-        const applyData = await self.applyUploadUGC(signature);
+        const applyData = await self.applyUploadUGC();
 
         callback({
           TmpSecretId: applyData.tempCertificate.secretId,
@@ -354,9 +355,10 @@ class Uploader extends EventEmitter implements IUploader {
     return await Promise.all(uploadPromises)
   }
 
-  async commitUploadUGC(signature: string, vodSessionKey: string, retryCount: number = 0) {
+  async commitUploadUGC(vodSessionKey: string, retryCount: number = 0) {
     const self = this;
 
+    const signature = await this.getSignature();
     this.delStorage(this.sessionName);
 
     async function whenError(err?: vodError): Promise<any> {
@@ -367,7 +369,7 @@ class Uploader extends EventEmitter implements IUploader {
         throw new Error('commit upload failed')
       }
       await util.delay(self.retryDelay);
-      return self.commitUploadUGC(signature, vodSessionKey, retryCount + 1)
+      return self.commitUploadUGC(vodSessionKey, retryCount + 1)
     }
 
     let response;
@@ -398,12 +400,10 @@ class Uploader extends EventEmitter implements IUploader {
   }
 
   async _start() {
-    const signature = await this.getSignature();
-    const applyData = await this.applyUploadUGC(signature);
+    const applyData = await this.applyUploadUGC();
     await this.uploadToCos(applyData)
 
-    const newSignature = await this.getSignature();
-    return await this.commitUploadUGC(newSignature, applyData.vodSessionKey)
+    return await this.commitUploadUGC(applyData.vodSessionKey)
   }
 
   done() {
