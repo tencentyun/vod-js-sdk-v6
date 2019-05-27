@@ -1,6 +1,6 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "tencent cloud vod js sdk v6",
   "main": "lib/tc_vod.js",
   "unpkg": "dist/vod-js-sdk-v6.js",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/tencentyun/vod-js-sdk-v6#readme",
   "dependencies": {
     "axios": "^0.18.0",
-    "cos-js-sdk-v5": "0.5.8",
+    "cos-js-sdk-v5": "0.5.16",
     "js-sha1": "^0.6.0"
   },
   "devDependencies": {
