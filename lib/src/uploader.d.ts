@@ -14,36 +14,7 @@ export declare enum UploaderEvent {
     cover_progress = "cover_progress",
     cover_upload = "cover_upload"
 }
-<<<<<<< HEAD
-export interface IUploader {
-=======
-interface IApplyData {
-    video: {
-        storageSignature: string;
-        storagePath: string;
-    };
-    cover?: {
-        storageSignature: string;
-        storagePath: string;
-    };
-    storageAppId: number;
-    storageBucket: string;
-    storageRegion: string;
-    storageRegionV5: string;
-    domain: string;
-    vodSessionKey: string;
-    tempCertificate: {
-        secretId: string;
-        secretKey: string;
-        token: string;
-        expiredTime: number;
-    };
-    appId: number;
-    timestamp: number;
-    StorageRegionV5: string;
-}
 export interface UploaderOptions {
->>>>>>> architecture of report system
     getSignature: IGetSignature;
     videoFile?: File;
     mediaFile?: File;

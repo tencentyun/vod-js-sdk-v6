@@ -1,3 +1,3 @@
 export type vodError = Error & {
-  code?: number
-}
+  code?: number;
+};

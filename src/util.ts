@@ -1,24 +1,24 @@
-
-function isFile(v: any) {
-  return Object.prototype.toString.call(v) == "[object File]"
+function isFile(v: any): boolean {
+  return Object.prototype.toString.call(v) == "[object File]";
 }
 
-function isFunction(v: any) {
-  return typeof v === 'function'
+function isFunction(v: any): boolean {
+  return typeof v === "function";
 }
 
-function isString(v: any) {
-  return typeof v === 'string'
+function isString(v: any): boolean {
+  return typeof v === "string";
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function noop() {}
 
 function delay(ms: number) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(() => {
-      resolve()
+      resolve();
     }, ms);
-  })
+  });
 }
 
 export default {
@@ -27,4 +27,4 @@ export default {
   isString,
   noop,
   delay
-}
+};

@@ -1,6 +1,6 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.2.11",
+  "version": "1.3.0",
   "description": "tencent cloud vod js sdk v6",
   "main": "lib/tc_vod.js",
   "unpkg": "dist/vod-js-sdk-v6.js",
@@ -12,7 +12,8 @@
     "dist": "webpack --config webpack.config.js",
     "build": "npm run test && npm run dist && npm run compile",
     "compile": "tsc -p tsconfig.json",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,11 @@
   "devDependencies": {
     "@types/mocha": "^5.2.5",
     "@types/sha1": "^1.1.1",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
     "espower-typescript": "^9.0.1",
     "jsdom": "^13.1.0",
     "jsdom-global": "^3.0.2",
@@ -44,6 +50,7 @@
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "power-assert": "^1.6.1",
+    "prettier": "^1.17.1",
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.2",
     "webpack": "^4.28.1",

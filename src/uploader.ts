@@ -1,27 +1,33 @@
-const sha1 = require('js-sha1')
-const COS = require('cos-js-sdk-v5')
+const sha1 = require("js-sha1");
+const COS = require("cos-js-sdk-v5");
 
-import {EventEmitter} from 'events';
-import axios from 'axios'
-import util from './util'
-import { vodError } from './types';
-export type IGetSignature = () => Promise<string>
-export type TcVodFileInfo = { name: string, type: string, size: number }
+import { EventEmitter } from "events";
+import axios from "axios";
+import util from "./util";
+import { vodError } from "./types";
+import { VodReportEvent } from "./vod_reporter";
+
+export type IGetSignature = () => Promise<string>;
+export interface TcVodFileInfo {
+  name: string;
+  type: string;
+  size: number;
+}
 
 export enum UploaderEvent {
-  video_progress = 'video_progress',
-  media_progress = 'media_progress',
+  video_progress = "video_progress",
+  media_progress = "media_progress",
 
-  video_upload = 'video_upload',
-  media_upload = 'media_upload',
+  video_upload = "video_upload",
+  media_upload = "media_upload",
 
-  cover_progress = 'cover_progress',
-  cover_upload = 'cover_upload',
+  cover_progress = "cover_progress",
+  cover_upload = "cover_upload"
 }
 
 interface IApplyUpload {
-  signature: string,
-  vodSessionKey?: string,
+  signature: string;
+  vodSessionKey?: string;
 
   videoName?: string;
   videoType?: string;
@@ -35,44 +41,44 @@ interface IApplyUpload {
 }
 
 interface IApplyData {
-  "video": {
-    "storageSignature": string,
-    "storagePath": string
-  },
-  "cover"?: {
-    "storageSignature": string,
-    "storagePath": string
-  },
-  "storageAppId": number,
-  "storageBucket": string,
-  "storageRegion": string,
-  "storageRegionV5": string,
-  "domain": string,
-  "vodSessionKey": string,
-  "tempCertificate": {
-    "secretId": string,
-    "secretKey": string,
-    "token": string,
-    "expiredTime": number
-  },
-  "appId": number,
-  "timestamp": number,
-  "StorageRegionV5": string
+  video: {
+    storageSignature: string;
+    storagePath: string;
+  };
+  cover?: {
+    storageSignature: string;
+    storagePath: string;
+  };
+  storageAppId: number;
+  storageBucket: string;
+  storageRegion: string;
+  storageRegionV5: string;
+  domain: string;
+  vodSessionKey: string;
+  tempCertificate: {
+    secretId: string;
+    secretKey: string;
+    token: string;
+    expiredTime: number;
+  };
+  appId: number;
+  timestamp: number;
+  StorageRegionV5: string;
 }
 
-export interface IUploader {
+export interface UploaderOptions {
   getSignature: IGetSignature;
 
-  videoFile?: File,
-  mediaFile?: File,
-  coverFile?: File,
+  videoFile?: File;
+  mediaFile?: File;
+  coverFile?: File;
 
-  videoName?: string,
-  mediaName?: string,
-  fileId?: string,
+  videoName?: string;
+  mediaName?: string;
+  fileId?: string;
 }
 
-class Uploader extends EventEmitter implements IUploader {
+class Uploader extends EventEmitter implements UploaderOptions {
   getSignature: IGetSignature;
   videoFile: File;
   videoInfo: TcVodFileInfo;
@@ -83,8 +89,8 @@ class Uploader extends EventEmitter implements IUploader {
   taskId: string;
 
   videoName: string;
-  sessionName: string = '';
-  vodSessionKey: string = '';
+  sessionName: string = "";
+  vodSessionKey: string = "";
   fileId: string;
 
   donePromise: Promise<any>;
@@ -96,7 +102,7 @@ class Uploader extends EventEmitter implements IUploader {
   commitRequestRetryCount = 3;
   retryDelay = 1000;
 
-  constructor(params: IUploader) {
+  constructor(params: UploaderOptions) {
     super();
     this.validateInitParams(params);
 
@@ -107,72 +113,75 @@ class Uploader extends EventEmitter implements IUploader {
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
 
-    this.genFileInfo()
+    this.genFileInfo();
   }
 
   // set storage
-  setStorage(name: string, value: string) {
+  setStorage(name: string, value: string): void {
     if (!name) {
       return;
     }
 
-    const cname = 'webugc_' + sha1(name);
+    const cname = "webugc_" + sha1(name);
     try {
       localStorage.setItem(cname, value);
-    } catch (e) { }
+    } catch (e) {}
   }
 
   // get storage
-  getStorage(name: string) {
+  getStorage(name: string): string {
     if (!name) {
       return;
     }
-    const cname = 'webugc_' + sha1(name);
+    const cname = "webugc_" + sha1(name);
     let result = null;
     try {
       result = localStorage.getItem(cname);
-    } catch (e) { }
+    } catch (e) {}
 
     return result;
   }
 
   // delete storage
-  delStorage(name: string) {
+  delStorage(name: string): void {
     if (!name) {
       return;
     }
-    const cname = 'webugc_' + sha1(name);
+    const cname = "webugc_" + sha1(name);
     try {
       localStorage.removeItem(cname);
-    } catch (e) { }
+    } catch (e) {}
   }
 
   // validate init params
-  validateInitParams(params: IUploader) {
+  validateInitParams(params: UploaderOptions): void {
     if (!util.isFunction(params.getSignature)) {
-      throw new Error('getSignature must be a function');
+      throw new Error("getSignature must be a function");
     }
     if (params.videoFile && !util.isFile(params.videoFile)) {
-      throw new Error('videoFile must be a File');
+      throw new Error("videoFile must be a File");
     }
   }
 
-  genFileInfo() {
+  genFileInfo(): void {
     // video file info
     const videoFile = this.videoFile;
     if (videoFile) {
-      const lastDotIndex = videoFile.name.lastIndexOf('.');
-      let videoName = '';
+      const lastDotIndex = videoFile.name.lastIndexOf(".");
+      let videoName = "";
       // if specified, use it.
       if (this.videoName) {
         if (!util.isString(this.videoName)) {
-          throw new Error('mediaName must be a string');
+          throw new Error("mediaName must be a string");
         } else if (/[:*?<>\"\\/|]/g.test(this.videoName)) {
-          throw new Error('Cant use these chars in filename: \\ / : * ? " < > |');
+          throw new Error(
+            'Cant use these chars in filename: \\ / : * ? " < > |'
+          );
         } else {
           videoName = this.videoName;
         }
-      } else { // else use the meta info of file
+      } else {
+        // else use the meta info of file
         videoName = videoFile.name.substring(0, lastDotIndex);
       }
       this.videoInfo = {
@@ -180,70 +189,73 @@ class Uploader extends EventEmitter implements IUploader {
         type: videoFile.name.substring(lastDotIndex + 1).toLowerCase(),
         size: videoFile.size
       };
-      this.sessionName += `${videoFile.name}_${videoFile.size};`
+      this.sessionName += `${videoFile.name}_${videoFile.size};`;
     }
 
     // cover file info
     const coverFile = this.coverFile;
     if (coverFile) {
       const coverName = coverFile.name;
-      const coverLastDotIndex = coverName.lastIndexOf('.');
+      const coverLastDotIndex = coverName.lastIndexOf(".");
       this.coverInfo = {
         name: coverName.substring(0, coverLastDotIndex),
         type: coverName.substring(coverLastDotIndex + 1).toLowerCase(),
         size: coverFile.size
       };
-      this.sessionName += `${coverFile.name}_${coverFile.size};`
+      this.sessionName += `${coverFile.name}_${coverFile.size};`;
     }
-  };
+  }
 
-  async applyUploadUGC(retryCount: number = 0) {
+  async applyUploadUGC(retryCount: number = 0): Promise<any> {
     const self = this;
 
     const signature = await this.getSignature();
 
-    let sendParam: IApplyUpload;
+    let sendParams: IApplyUpload;
     const videoInfo = this.videoInfo;
     const coverInfo = this.coverInfo;
-    const vodSessionKey = this.vodSessionKey || this.getStorage(this.sessionName);
+    const vodSessionKey =
+      this.vodSessionKey || this.getStorage(this.sessionName);
 
     // resume from break point
     if (vodSessionKey) {
-      sendParam = {
-        'signature': signature,
-        'vodSessionKey': vodSessionKey
+      sendParams = {
+        signature: signature,
+        vodSessionKey: vodSessionKey
       };
     } else if (videoInfo) {
-      sendParam = {
-        'signature': signature,
-        'videoName': videoInfo.name,
-        'videoType': videoInfo.type,
-        'videoSize': videoInfo.size
+      sendParams = {
+        signature: signature,
+        videoName: videoInfo.name,
+        videoType: videoInfo.type,
+        videoSize: videoInfo.size
       };
-      if (coverInfo) { // upload video together with cover
-        sendParam.coverName = coverInfo.name;
-        sendParam.coverType = coverInfo.type;
-        sendParam.coverSize = coverInfo.size;
+      if (coverInfo) {
+        // upload video together with cover
+        sendParams.coverName = coverInfo.name;
+        sendParams.coverType = coverInfo.type;
+        sendParams.coverSize = coverInfo.size;
       }
-    } else if (this.fileId && coverInfo) { // alter cover
-      sendParam = {
-        'signature': signature,
-        'fileId': this.fileId,
-        'coverName': coverInfo.name,
-        'coverType': coverInfo.type,
-        'coverSize': coverInfo.size
+    } else if (this.fileId && coverInfo) {
+      // alter cover
+      sendParams = {
+        signature: signature,
+        fileId: this.fileId,
+        coverName: coverInfo.name,
+        coverType: coverInfo.type,
+        coverSize: coverInfo.size
       };
     } else {
-      throw ('Wrong params, please check and try again');
+      throw "Wrong params, please check and try again";
     }
 
     async function whenError(err?: vodError): Promise<any> {
-      self.delStorage(self.sessionName)
+      self.delStorage(self.sessionName);
       if (self.applyRequestRetryCount == retryCount) {
         if (err) {
-          throw err
+          throw err;
         }
-        throw new Error(`apply upload failed`)
+        throw new Error(`apply upload failed`);
       }
       await util.delay(self.retryDelay);
       return self.applyUploadUGC(retryCount + 1);
@@ -251,26 +263,33 @@ class Uploader extends EventEmitter implements IUploader {
 
     let response;
     try {
-      response = await axios.post('https://vod2.qcloud.com/v3/index.php?Action=ApplyUploadUGC', sendParam, {
-        timeout: this.applyRequestTimeout,
-        withCredentials: false,
-      })
+      response = await axios.post(
+        "https://vod2.qcloud.com/v3/index.php?Action=ApplyUploadUGC",
+        sendParams,
+        {
+          timeout: this.applyRequestTimeout,
+          withCredentials: false
+        }
+      );
     } catch (e) {
-      return whenError(e)
+      this.emit(VodReportEvent.report_apply, { err: e });
+      return whenError(e);
     }
+
+    this.emit(VodReportEvent.report_apply, response.data);
 
     const applyResult = response.data;
     // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
     if (applyResult.code == 0) {
       const vodSessionKey = applyResult.data.vodSessionKey;
       this.setStorage(this.sessionName, vodSessionKey);
-      this.vodSessionKey = vodSessionKey
+      this.vodSessionKey = vodSessionKey;
       return applyResult.data;
     } else {
       // return the apply result error info
-      const err: vodError = new Error(applyResult.message)
+      const err: vodError = new Error(applyResult.message);
       err.code = applyResult.code;
-      return whenError(err)
+      return whenError(err);
     }
   }
 
@@ -279,19 +298,19 @@ class Uploader extends EventEmitter implements IUploader {
     const applyData = await this.applyUploadUGC();
 
     const cosParam = {
-      bucket: applyData.storageBucket + '-' + applyData.storageAppId,
-      region: applyData.storageRegionV5,
+      bucket: applyData.storageBucket + "-" + applyData.storageAppId,
+      region: applyData.storageRegionV5
     };
 
     const cos = new COS({
-      getAuthorization: async function (options: object, callback: Function) {
+      getAuthorization: async function(options: object, callback: Function) {
         const applyData = await self.applyUploadUGC();
 
         callback({
           TmpSecretId: applyData.tempCertificate.secretId,
           TmpSecretKey: applyData.tempCertificate.secretKey,
           XCosSecurityToken: applyData.tempCertificate.token,
-          ExpiredTime: applyData.tempCertificate.expiredTime,
+          ExpiredTime: applyData.tempCertificate.expiredTime
         });
       }
     });
@@ -304,19 +323,19 @@ class Uploader extends EventEmitter implements IUploader {
         ...cosParam,
         file: this.videoFile,
         key: applyData.video.storagePath,
-        onProgress: function (data: any) {
+        onProgress: function(data: any) {
           self.emit(UploaderEvent.video_progress, data);
           self.emit(UploaderEvent.media_progress, data);
         },
-        onUpload: function (data: any) {
+        onUpload: function(data: any) {
           self.emit(UploaderEvent.video_upload, data);
           self.emit(UploaderEvent.media_upload, data);
         },
-        TaskReady: function (taskId: string) {
-          self.taskId = taskId
+        TaskReady: function(taskId: string) {
+          self.taskId = taskId;
         }
-      }
-      uploadCosParams.push(cosVideoParam)
+      };
+      uploadCosParams.push(cosVideoParam);
     }
 
     if (this.coverFile) {
@@ -324,38 +343,42 @@ class Uploader extends EventEmitter implements IUploader {
         ...cosParam,
         file: this.coverFile,
         key: applyData.cover.storagePath,
-        onProgress: function (data: any) {
+        onProgress: function(data: any) {
           self.emit(UploaderEvent.cover_progress, data);
         },
-        onUpload: function (data: any) {
+        onUpload: function(data: any) {
           self.emit(UploaderEvent.cover_upload, data);
         },
-        TaskReady: util.noop,
-      }
-      uploadCosParams.push(cosCoverParam)
+        TaskReady: util.noop
+      };
+      uploadCosParams.push(cosCoverParam);
     }
 
-    const uploadPromises = uploadCosParams.map((uploadCosParam) => {
-      return new Promise<void>(function (resolve, reject) {
-        cos.sliceUploadFile({
-          Bucket: uploadCosParam.bucket,
-          Region: uploadCosParam.region,
-          Key: uploadCosParam.key,
-          Body: uploadCosParam.file,
-          TaskReady: uploadCosParam.TaskReady,
-          onProgress: uploadCosParam.onProgress,
-        }, function (err: any, data: any) {
-          if (!err) {
-            uploadCosParam.onUpload(data);
-            return resolve()
+    const uploadPromises = uploadCosParams.map(uploadCosParam => {
+      return new Promise<void>(function(resolve, reject) {
+        cos.sliceUploadFile(
+          {
+            Bucket: uploadCosParam.bucket,
+            Region: uploadCosParam.region,
+            Key: uploadCosParam.key,
+            Body: uploadCosParam.file,
+            TaskReady: uploadCosParam.TaskReady,
+            onProgress: uploadCosParam.onProgress
+          },
+          function(err: any, data: any) {
+            self.emit(VodReportEvent.report_cos_upload, { err: err });
+            if (!err) {
+              uploadCosParam.onUpload(data);
+              return resolve();
+            }
+            self.delStorage(self.sessionName);
+            reject(err);
           }
-          self.delStorage(self.sessionName)
-          reject(err);
-        });
-      })
-    })
+        );
+      });
+    });
 
-    return await Promise.all(uploadPromises)
+    return await Promise.all(uploadPromises);
   }
 
   async commitUploadUGC(retryCount: number = 0) {
@@ -368,45 +391,52 @@ class Uploader extends EventEmitter implements IUploader {
     async function whenError(err?: vodError): Promise<any> {
       if (self.commitRequestRetryCount == retryCount) {
         if (err) {
-          throw err
+          throw err;
         }
-        throw new Error('commit upload failed')
+        throw new Error("commit upload failed");
       }
       await util.delay(self.retryDelay);
-      return self.commitUploadUGC(retryCount + 1)
+      return self.commitUploadUGC(retryCount + 1);
     }
 
     let response;
     try {
-      response = await axios.post('https://vod2.qcloud.com/v3/index.php?Action=CommitUploadUGC', {
-        'signature': signature,
-        'vodSessionKey': vodSessionKey,
-      }, {
+      response = await axios.post(
+        "https://vod2.qcloud.com/v3/index.php?Action=CommitUploadUGC",
+        {
+          signature: signature,
+          vodSessionKey: vodSessionKey
+        },
+        {
           timeout: this.commitRequestTimeout,
-          withCredentials: false,
-        })
+          withCredentials: false
+        }
+      );
     } catch (e) {
-      return whenError(e)
+      this.emit(VodReportEvent.report_commit, { err: e });
+      return whenError(e);
     }
+
+    this.emit(VodReportEvent.report_commit, response.data);
 
     const commitResult = response.data;
     if (commitResult.code == 0) {
       return commitResult.data;
     } else {
-      const err: vodError = new Error(commitResult.message)
+      const err: vodError = new Error(commitResult.message);
       err.code = commitResult.code;
-      return whenError(err)
+      return whenError(err);
     }
   }
 
   start() {
-    this.donePromise = this._start()
+    this.donePromise = this._start();
   }
 
   async _start() {
-    await this.uploadToCos()
+    await this.uploadToCos();
 
-    return await this.commitUploadUGC()
+    return await this.commitUploadUGC();
   }
 
   done() {
@@ -418,4 +448,4 @@ class Uploader extends EventEmitter implements IUploader {
   }
 }
 
-export default Uploader
+export default Uploader;
