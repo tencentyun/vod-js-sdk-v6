@@ -84,6 +84,7 @@ class Uploader extends EventEmitter implements IUploader {
 
   videoName: string;
   sessionName: string = '';
+  vodSessionKey: string = '';
   fileId: string;
 
   donePromise: Promise<any>;
@@ -204,7 +205,7 @@ class Uploader extends EventEmitter implements IUploader {
     let sendParam: IApplyUpload;
     const videoInfo = this.videoInfo;
     const coverInfo = this.coverInfo;
-    const vodSessionKey = this.getStorage(this.sessionName);
+    const vodSessionKey = this.vodSessionKey || this.getStorage(this.sessionName);
 
     // resume from break point
     if (vodSessionKey) {
@@ -263,6 +264,7 @@ class Uploader extends EventEmitter implements IUploader {
     if (applyResult.code == 0) {
       const vodSessionKey = applyResult.data.vodSessionKey;
       this.setStorage(this.sessionName, vodSessionKey);
+      this.vodSessionKey = vodSessionKey
       return applyResult.data;
     } else {
       // return the apply result error info
@@ -272,8 +274,9 @@ class Uploader extends EventEmitter implements IUploader {
     }
   }
 
-  async uploadToCos(applyData: IApplyData) {
+  async uploadToCos() {
     const self = this;
+    const applyData = await this.applyUploadUGC();
 
     const cosParam = {
       bucket: applyData.storageBucket + '-' + applyData.storageAppId,
@@ -355,11 +358,12 @@ class Uploader extends EventEmitter implements IUploader {
     return await Promise.all(uploadPromises)
   }
 
-  async commitUploadUGC(vodSessionKey: string, retryCount: number = 0) {
+  async commitUploadUGC(retryCount: number = 0) {
     const self = this;
 
     const signature = await this.getSignature();
     this.delStorage(this.sessionName);
+    const vodSessionKey = this.vodSessionKey;
 
     async function whenError(err?: vodError): Promise<any> {
       if (self.commitRequestRetryCount == retryCount) {
@@ -369,7 +373,7 @@ class Uploader extends EventEmitter implements IUploader {
         throw new Error('commit upload failed')
       }
       await util.delay(self.retryDelay);
-      return self.commitUploadUGC(vodSessionKey, retryCount + 1)
+      return self.commitUploadUGC(retryCount + 1)
     }
 
     let response;
@@ -400,10 +404,9 @@ class Uploader extends EventEmitter implements IUploader {
   }
 
   async _start() {
-    const applyData = await this.applyUploadUGC();
-    await this.uploadToCos(applyData)
+    await this.uploadToCos()
 
-    return await this.commitUploadUGC(applyData.vodSessionKey)
+    return await this.commitUploadUGC()
   }
 
   done() {

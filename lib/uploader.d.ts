@@ -14,31 +14,6 @@ export declare enum UploaderEvent {
     cover_progress = "cover_progress",
     cover_upload = "cover_upload"
 }
-interface IApplyData {
-    "video": {
-        "storageSignature": string;
-        "storagePath": string;
-    };
-    "cover"?: {
-        "storageSignature": string;
-        "storagePath": string;
-    };
-    "storageAppId": number;
-    "storageBucket": string;
-    "storageRegion": string;
-    "storageRegionV5": string;
-    "domain": string;
-    "vodSessionKey": string;
-    "tempCertificate": {
-        "secretId": string;
-        "secretKey": string;
-        "token": string;
-        "expiredTime": number;
-    };
-    "appId": number;
-    "timestamp": number;
-    "StorageRegionV5": string;
-}
 export interface IUploader {
     getSignature: IGetSignature;
     videoFile?: File;
@@ -58,6 +33,7 @@ declare class Uploader extends EventEmitter implements IUploader {
     taskId: string;
     videoName: string;
     sessionName: string;
+    vodSessionKey: string;
     fileId: string;
     donePromise: Promise<any>;
     applyRequestTimeout: number;
@@ -72,8 +48,8 @@ declare class Uploader extends EventEmitter implements IUploader {
     validateInitParams(params: IUploader): void;
     genFileInfo(): void;
     applyUploadUGC(retryCount?: number): Promise<any>;
-    uploadToCos(applyData: IApplyData): Promise<void[]>;
-    commitUploadUGC(vodSessionKey: string, retryCount?: number): Promise<any>;
+    uploadToCos(): Promise<void[]>;
+    commitUploadUGC(retryCount?: number): Promise<any>;
     start(): void;
     _start(): Promise<any>;
     done(): Promise<any>;
