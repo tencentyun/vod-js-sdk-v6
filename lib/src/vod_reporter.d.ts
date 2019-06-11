@@ -6,18 +6,22 @@ export declare enum VodReportEvent {
     report_cos_upload = "report_cos_upload",
     report_commit = "report_commit"
 }
+interface ReportObj {
+    err: any;
+    requestStartTime: Date;
+    data: any;
+}
 export declare class VodReporter {
     uploader: Uploader;
     options: IVodReporter;
-    baseReportData: {
-        version: string;
-        platform: number;
-    };
+    baseReportData: any;
+    reportUrl: string;
     constructor(uploader: Uploader, options?: IVodReporter);
     init(): void;
-    onApply(reportData: any): void;
-    onCosUpload(reportData: any): void;
-    onCommit(reportData: any): void;
+    onApply(reportObj: ReportObj): void;
+    onCosUpload(reportObj: ReportObj): void;
+    onCommit(reportObj: ReportObj): void;
     report(reportData: any): void;
+    send(reportData: any): void;
 }
 export {};

@@ -1,5 +1,6 @@
 import Uploader from "./uploader";
 import * as pkg from "../package.json";
+import axios from "axios";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IVodReporter {}
@@ -16,14 +17,24 @@ enum ReqType {
   commit = 10002
 }
 
+interface ReportObj {
+  err: any;
+  requestStartTime: Date;
+  data: any;
+}
+
 export class VodReporter {
   uploader: Uploader;
   options: IVodReporter;
 
-  baseReportData = {
+  // only partial data when created
+  baseReportData: any = {
     version: pkg.version,
-    platform: 3000
+    platform: 3000,
+    device: navigator.userAgent
   };
+
+  reportUrl = "https://vodreport.qcloud.com/ugcupload_new";
 
   constructor(uploader: Uploader, options?: IVodReporter) {
     this.uploader = uploader;
@@ -33,32 +44,83 @@ export class VodReporter {
   }
 
   init() {
-    this.uploader.on(VodReportEvent.report_apply, this.onApply);
-    this.uploader.on(VodReportEvent.report_cos_upload, this.onCosUpload);
-    this.uploader.on(VodReportEvent.report_commit, this.onCommit);
+    this.uploader.on(VodReportEvent.report_apply, this.onApply.bind(this));
+    this.uploader.on(
+      VodReportEvent.report_cos_upload,
+      this.onCosUpload.bind(this)
+    );
+    this.uploader.on(VodReportEvent.report_commit, this.onCommit.bind(this));
   }
 
-  onApply(reportData: any) {
-    const newReportData = {
-      reqType: ReqType.apply
+  // ApplyUploadUGC
+  onApply(reportObj: ReportObj) {
+    const uploader = this.uploader;
+    Object.assign(this.baseReportData, {
+      appId: uploader.appId,
+      fileSize: uploader.videoFile.size,
+      fileName: uploader.videoFile.name,
+      fileType: uploader.videoFile.type,
+      vodSessionKey: uploader.vodSessionKey
+    });
+
+    const customReportData = {
+      reqType: ReqType.apply,
+      vodErrCode: 0,
+      errMsg: "",
+      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+      reqTime: Number(reportObj.requestStartTime)
     };
-    this.report(newReportData);
+    if (reportObj.err) {
+      customReportData.vodErrCode = reportObj.err.code;
+      customReportData.errMsg = reportObj.err.message;
+    }
+    if (reportObj.data) {
+      this.baseReportData.cosRegion = reportObj.data.storageRegionV5;
+    }
+    this.report(customReportData);
   }
-  onCosUpload(reportData: any) {
-    const newReportData = {
-      reqType: ReqType.cos_upload
+
+  // upload to cos
+  onCosUpload(reportObj: ReportObj) {
+    const customReportData = {
+      reqType: ReqType.cos_upload,
+      cosErrCode: "",
+      errMsg: "",
+      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+      reqTime: Number(reportObj.requestStartTime)
     };
-    this.report(newReportData);
+    if (reportObj.err) {
+      customReportData.cosErrCode = reportObj.err.error.Code;
+      customReportData.errMsg = JSON.stringify(reportObj.err);
+    }
+    this.report(customReportData);
   }
-  onCommit(reportData: any) {
-    const newReportData = {
-      reqType: ReqType.commit
+
+  // CommitUploadUGC
+  onCommit(reportObj: ReportObj) {
+    const customReportData = {
+      reqType: ReqType.commit,
+      vodErrCode: 0,
+      errMsg: "",
+      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+      reqTime: Number(reportObj.requestStartTime)
     };
-    this.report(newReportData);
+    if (reportObj.err) {
+      customReportData.vodErrCode = reportObj.err.code;
+      customReportData.errMsg = reportObj.err.message;
+    }
+    if (reportObj.data) {
+      this.baseReportData.fileId = reportObj.data.fileId;
+    }
+    this.report(customReportData);
   }
 
   report(reportData: any) {
     reportData = { ...this.baseReportData, ...reportData };
-    console.log(reportData);
+    this.send(reportData);
+  }
+
+  send(reportData: any) {
+    axios.post(this.reportUrl, reportData);
   }
 }

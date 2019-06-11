@@ -12,7 +12,7 @@ const fakeMediaFile: File = ({
   lastModified: null,
   name: "vv.dd.mp4",
   size: 100,
-  type: null,
+  type: "video/mp4",
   slice: null,
   toString() {
     return "[object File]";

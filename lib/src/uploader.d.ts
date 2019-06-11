@@ -14,6 +14,31 @@ export declare enum UploaderEvent {
     cover_progress = "cover_progress",
     cover_upload = "cover_upload"
 }
+interface IApplyData {
+    video: {
+        storageSignature: string;
+        storagePath: string;
+    };
+    cover?: {
+        storageSignature: string;
+        storagePath: string;
+    };
+    storageAppId: number;
+    storageBucket: string;
+    storageRegion: string;
+    storageRegionV5: string;
+    domain: string;
+    vodSessionKey: string;
+    tempCertificate: {
+        secretId: string;
+        secretKey: string;
+        token: string;
+        expiredTime: number;
+    };
+    appId: number;
+    timestamp: number;
+    StorageRegionV5: string;
+}
 export interface UploaderOptions {
     getSignature: IGetSignature;
     videoFile?: File;
@@ -34,6 +59,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     videoName: string;
     sessionName: string;
     vodSessionKey: string;
+    appId: number;
     fileId: string;
     donePromise: Promise<any>;
     applyRequestTimeout: number;
@@ -47,7 +73,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     delStorage(name: string): void;
     validateInitParams(params: UploaderOptions): void;
     genFileInfo(): void;
-    applyUploadUGC(retryCount?: number): Promise<any>;
+    applyUploadUGC(retryCount?: number): Promise<IApplyData>;
     uploadToCos(): Promise<void[]>;
     commitUploadUGC(retryCount?: number): Promise<any>;
     start(): void;

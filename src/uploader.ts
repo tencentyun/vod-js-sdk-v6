@@ -91,6 +91,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
   videoName: string;
   sessionName: string = "";
   vodSessionKey: string = "";
+  appId: number = 0;
   fileId: string;
 
   donePromise: Promise<any>;
@@ -206,7 +207,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     }
   }
 
-  async applyUploadUGC(retryCount: number = 0): Promise<any> {
+  async applyUploadUGC(retryCount: number = 0): Promise<IApplyData> {
     const self = this;
 
     const signature = await this.getSignature();
@@ -248,8 +249,13 @@ class Uploader extends EventEmitter implements UploaderOptions {
     } else {
       throw "Wrong params, please check and try again";
     }
+    const requestStartTime = new Date();
 
     async function whenError(err?: vodError): Promise<any> {
+      self.emit(VodReportEvent.report_apply, {
+        err: err,
+        requestStartTime: requestStartTime
+      });
       self.delStorage(self.sessionName);
       if (self.applyRequestRetryCount == retryCount) {
         if (err) {
@@ -272,23 +278,29 @@ class Uploader extends EventEmitter implements UploaderOptions {
         }
       );
     } catch (e) {
-      this.emit(VodReportEvent.report_apply, { err: e });
       return whenError(e);
     }
 
-    this.emit(VodReportEvent.report_apply, response.data);
-
     const applyResult = response.data;
+
     // all err code https://user-images.githubusercontent.com/1147375/51222454-bf6ef280-1978-11e9-8e33-1b0fdb2fe200.png
     if (applyResult.code == 0) {
-      const vodSessionKey = applyResult.data.vodSessionKey;
+      const applyData = applyResult.data as IApplyData;
+      const vodSessionKey = applyData.vodSessionKey;
       this.setStorage(this.sessionName, vodSessionKey);
       this.vodSessionKey = vodSessionKey;
-      return applyResult.data;
+      this.appId = applyData.appId;
+
+      this.emit(VodReportEvent.report_apply, {
+        data: applyData,
+        requestStartTime: requestStartTime
+      });
+      return applyData;
     } else {
       // return the apply result error info
       const err: vodError = new Error(applyResult.message);
       err.code = applyResult.code;
+
       return whenError(err);
     }
   }
@@ -353,7 +365,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
       };
       uploadCosParams.push(cosCoverParam);
     }
-
+    const requestStartTime = new Date();
     const uploadPromises = uploadCosParams.map(uploadCosParam => {
       return new Promise<void>(function(resolve, reject) {
         cos.sliceUploadFile(
@@ -366,7 +378,13 @@ class Uploader extends EventEmitter implements UploaderOptions {
             onProgress: uploadCosParam.onProgress
           },
           function(err: any, data: any) {
-            self.emit(VodReportEvent.report_cos_upload, { err: err });
+            // only report video file
+            if (uploadCosParam.file === self.videoFile) {
+              self.emit(VodReportEvent.report_cos_upload, {
+                err: err,
+                requestStartTime: requestStartTime
+              });
+            }
             if (!err) {
               uploadCosParam.onUpload(data);
               return resolve();
@@ -388,7 +406,12 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.delStorage(this.sessionName);
     const vodSessionKey = this.vodSessionKey;
 
+    const requestStartTime = new Date();
     async function whenError(err?: vodError): Promise<any> {
+      self.emit(VodReportEvent.report_commit, {
+        err: err,
+        requestStartTime: requestStartTime
+      });
       if (self.commitRequestRetryCount == retryCount) {
         if (err) {
           throw err;
@@ -413,14 +436,16 @@ class Uploader extends EventEmitter implements UploaderOptions {
         }
       );
     } catch (e) {
-      this.emit(VodReportEvent.report_commit, { err: e });
       return whenError(e);
     }
 
-    this.emit(VodReportEvent.report_commit, response.data);
-
     const commitResult = response.data;
+
     if (commitResult.code == 0) {
+      this.emit(VodReportEvent.report_commit, {
+        data: commitResult.data,
+        requestStartTime: requestStartTime
+      });
       return commitResult.data;
     } else {
       const err: vodError = new Error(commitResult.message);

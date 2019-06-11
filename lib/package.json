@@ -1,0 +1,74 @@
+{
+    "name": "vod-js-sdk-v6",
+    "version": "1.3.1",
+    "description": "tencent cloud vod js sdk v6",
+    "main": "lib/tc_vod.js",
+    "unpkg": "dist/vod-js-sdk-v6.js",
+    "typings": "lib/tc_vod.d.ts",
+    "scripts": {
+        "test": "NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+        "cover": "NODE_ENV=test nyc mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+        "dev": "webpack --config webpack.config.js --watch",
+        "dist": "webpack --config webpack.config.js",
+        "build": "npm run test && npm run dist && npm run compile",
+        "compile": "tsc -p tsconfig.json",
+        "prepublish": "npm run build",
+        "lint": "tsc --noEmit && eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tencentyun/vod-js-sdk-v6.git"
+    },
+    "keywords": [
+        "tencentcloud",
+        "sdk",
+        "vod"
+    ],
+    "author": "alsotang <alsotang@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/tencentyun/vod-js-sdk-v6/issues"
+    },
+    "homepage": "https://github.com/tencentyun/vod-js-sdk-v6#readme",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "cos-js-sdk-v5": "0.5.16",
+        "js-sha1": "^0.6.0"
+    },
+    "devDependencies": {
+        "@types/mocha": "^5.2.5",
+        "@types/semver": "^6.0.0",
+        "@types/sha1": "^1.1.1",
+        "@typescript-eslint/eslint-plugin": "^1.9.0",
+        "@typescript-eslint/parser": "^1.9.0",
+        "eslint": "^5.16.0",
+        "eslint-config-prettier": "^4.3.0",
+        "eslint-plugin-prettier": "^3.1.0",
+        "espower-typescript": "^9.0.1",
+        "jsdom": "^13.1.0",
+        "jsdom-global": "^3.0.2",
+        "mm": "^2.4.1",
+        "mocha": "^5.2.0",
+        "nyc": "^13.1.0",
+        "power-assert": "^1.6.1",
+        "prettier": "^1.17.1",
+        "semver": "^6.1.1",
+        "ts-loader": "^5.3.3",
+        "typescript": "^3.2.2",
+        "webpack": "^4.28.1",
+        "webpack-cli": "^3.2.1"
+    },
+    "nyc": {
+        "extension": [
+            ".ts",
+            ".tsx"
+        ],
+        "include": [
+            "src"
+        ],
+        "reporter": [
+            "html"
+        ],
+        "all": true
+    }
+}

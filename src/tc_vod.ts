@@ -3,17 +3,24 @@ import { VodReporter } from "./vod_reporter";
 
 interface TcVodParams {
   getSignature: IGetSignature;
+  allowReport?: boolean;
 }
 class TcVod {
   getSignature: IGetSignature;
+  allowReport = true; // report sdk status to tencent cloud
   constructor(params: TcVodParams) {
     this.getSignature = params.getSignature;
+    if (params.allowReport !== void 0) {
+      this.allowReport = params.allowReport;
+    }
   }
 
   upload(params: UploaderOptions): Uploader {
     params = { getSignature: this.getSignature, ...params };
     const uploader = new Uploader(params);
-    this.initReporter(uploader);
+    if (this.allowReport) {
+      this.initReporter(uploader);
+    }
     uploader.start();
     return uploader;
   }
