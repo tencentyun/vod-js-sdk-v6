@@ -54,65 +54,80 @@ export class VodReporter {
 
   // ApplyUploadUGC
   onApply(reportObj: ReportObj) {
-    const uploader = this.uploader;
-    Object.assign(this.baseReportData, {
-      appId: uploader.appId,
-      fileSize: uploader.videoFile.size,
-      fileName: uploader.videoFile.name,
-      fileType: uploader.videoFile.type,
-      vodSessionKey: uploader.vodSessionKey
-    });
+    try {
+      const uploader = this.uploader;
+      if (!uploader.videoFile) {
+        return;
+      }
+      Object.assign(this.baseReportData, {
+        appId: uploader.appId,
+        fileSize: uploader.videoFile.size,
+        fileName: uploader.videoFile.name,
+        fileType: uploader.videoFile.type,
+        vodSessionKey: uploader.vodSessionKey
+      });
 
-    const customReportData = {
-      reqType: ReqType.apply,
-      vodErrCode: 0,
-      errMsg: "",
-      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
-      reqTime: Number(reportObj.requestStartTime)
-    };
-    if (reportObj.err) {
-      customReportData.vodErrCode = reportObj.err.code;
-      customReportData.errMsg = reportObj.err.message;
+      const customReportData = {
+        reqType: ReqType.apply,
+        vodErrCode: 0,
+        errMsg: "",
+        reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+        reqTime: Number(reportObj.requestStartTime)
+      };
+      if (reportObj.err) {
+        customReportData.vodErrCode = reportObj.err.code;
+        customReportData.errMsg = reportObj.err.message;
+      }
+      if (reportObj.data) {
+        this.baseReportData.cosRegion = reportObj.data.storageRegionV5;
+      }
+      this.report(customReportData);
+    } catch (e) {
+      console.error(`onApply`, e);
     }
-    if (reportObj.data) {
-      this.baseReportData.cosRegion = reportObj.data.storageRegionV5;
-    }
-    this.report(customReportData);
   }
 
   // upload to cos
   onCosUpload(reportObj: ReportObj) {
-    const customReportData = {
-      reqType: ReqType.cos_upload,
-      cosErrCode: "",
-      errMsg: "",
-      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
-      reqTime: Number(reportObj.requestStartTime)
-    };
-    if (reportObj.err) {
-      customReportData.cosErrCode = reportObj.err.error.Code;
-      customReportData.errMsg = JSON.stringify(reportObj.err);
+    try {
+      const customReportData = {
+        reqType: ReqType.cos_upload,
+        cosErrCode: "",
+        errMsg: "",
+        reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+        reqTime: Number(reportObj.requestStartTime)
+      };
+      if (reportObj.err) {
+        customReportData.cosErrCode = reportObj.err.error.Code;
+        customReportData.errMsg = JSON.stringify(reportObj.err);
+      }
+      this.report(customReportData);
+    } catch (e) {
+      console.error(`onCosUpload`, e);
     }
-    this.report(customReportData);
   }
 
   // CommitUploadUGC
   onCommit(reportObj: ReportObj) {
-    const customReportData = {
-      reqType: ReqType.commit,
-      vodErrCode: 0,
-      errMsg: "",
-      reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
-      reqTime: Number(reportObj.requestStartTime)
-    };
-    if (reportObj.err) {
-      customReportData.vodErrCode = reportObj.err.code;
-      customReportData.errMsg = reportObj.err.message;
+    try {
+      const customReportData = {
+        reqType: ReqType.commit,
+        vodErrCode: 0,
+        errMsg: "",
+        reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+        reqTime: Number(reportObj.requestStartTime)
+      };
+      if (reportObj.err) {
+        customReportData.vodErrCode = reportObj.err.code;
+        customReportData.errMsg = reportObj.err.message;
+      }
+      if (reportObj.data) {
+        this.baseReportData.fileId = reportObj.data.fileId;
+      }
+      this.report(customReportData);
+    } catch (e) {
+      console.error(`onCommit`, e);
     }
-    if (reportObj.data) {
-      this.baseReportData.fileId = reportObj.data.fileId;
-    }
-    this.report(customReportData);
   }
 
   report(reportData: any) {
