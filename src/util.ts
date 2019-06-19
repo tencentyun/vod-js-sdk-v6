@@ -26,5 +26,7 @@ export default {
   isFunction,
   isString,
   noop,
-  delay
+  delay,
+  isTest: process.env.NODE_ENV === "test",
+  isDev: process.env.NODE_ENV === "development"
 };

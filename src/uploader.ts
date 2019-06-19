@@ -76,6 +76,8 @@ export interface UploaderOptions {
   videoName?: string;
   mediaName?: string;
   fileId?: string;
+
+  appId?: number;
 }
 
 class Uploader extends EventEmitter implements UploaderOptions {
@@ -113,6 +115,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.videoName = params.mediaName || params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
+    this.appId = params.appId || 0;
 
     this.genFileInfo();
   }

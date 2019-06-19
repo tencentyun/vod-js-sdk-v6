@@ -47,6 +47,7 @@ export interface UploaderOptions {
     videoName?: string;
     mediaName?: string;
     fileId?: string;
+    appId?: number;
 }
 declare class Uploader extends EventEmitter implements UploaderOptions {
     getSignature: IGetSignature;

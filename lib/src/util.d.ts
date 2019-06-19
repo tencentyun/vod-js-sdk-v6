@@ -9,5 +9,7 @@ declare const _default: {
     isString: typeof isString;
     noop: typeof noop;
     delay: typeof delay;
+    isTest: boolean;
+    isDev: boolean;
 };
 export default _default;

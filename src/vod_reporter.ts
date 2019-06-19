@@ -1,6 +1,7 @@
 import Uploader from "./uploader";
 import * as pkg from "../package.json";
 import axios from "axios";
+import util from "./util";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IVodReporter {}
@@ -84,6 +85,9 @@ export class VodReporter {
       this.report(customReportData);
     } catch (e) {
       console.error(`onApply`, e);
+      if (util.isTest) {
+        throw e;
+      }
     }
   }
 
@@ -104,6 +108,9 @@ export class VodReporter {
       this.report(customReportData);
     } catch (e) {
       console.error(`onCosUpload`, e);
+      if (util.isTest) {
+        throw e;
+      }
     }
   }
 
@@ -127,6 +134,9 @@ export class VodReporter {
       this.report(customReportData);
     } catch (e) {
       console.error(`onCommit`, e);
+      if (util.isTest) {
+        throw e;
+      }
     }
   }
 
