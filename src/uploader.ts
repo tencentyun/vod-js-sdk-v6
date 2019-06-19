@@ -316,9 +316,8 @@ class Uploader extends EventEmitter implements UploaderOptions {
     }
   }
 
-  async uploadToCos() {
+  async uploadToCos(applyData: IApplyData) {
     const self = this;
-    const applyData = await this.applyUploadUGC();
 
     const cosParam = {
       bucket: applyData.storageBucket + "-" + applyData.storageAppId,
@@ -354,7 +353,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
           self.emit(UploaderEvent.video_upload, data);
           self.emit(UploaderEvent.media_upload, data);
         },
-        TaskReady: function(taskId: string) {
+        onTaskReady: function(taskId: string) {
           self.taskId = taskId;
         }
       };
@@ -372,7 +371,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
         onUpload: function(data: any) {
           self.emit(UploaderEvent.cover_upload, data);
         },
-        TaskReady: util.noop
+        onTaskReady: util.noop
       };
       uploadCosParams.push(cosCoverParam);
     }
@@ -385,7 +384,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
             Region: uploadCosParam.region,
             Key: uploadCosParam.key,
             Body: uploadCosParam.file,
-            TaskReady: uploadCosParam.TaskReady,
+            onTaskReady: uploadCosParam.onTaskReady,
             onProgress: uploadCosParam.onProgress
           },
           function(err: any, data: any) {
@@ -466,11 +465,31 @@ class Uploader extends EventEmitter implements UploaderOptions {
   }
 
   start() {
-    this.donePromise = this._start();
+    const requestStartTime = new Date();
+
+    this.donePromise = this._start()
+      .then(doneResult => {
+        this.emit(VodReportEvent.report_done, {
+          err: { code: 0 },
+          requestStartTime: requestStartTime
+        });
+        return doneResult;
+      })
+      .catch(err => {
+        this.emit(VodReportEvent.report_done, {
+          err: {
+            code: (err && err.code) || util.CLIENT_ERROR_CODE.UPLOAD_FAIL
+          },
+          requestStartTime: requestStartTime
+        });
+        throw err;
+      });
   }
 
   async _start() {
-    await this.uploadToCos();
+    const applyData = await this.applyUploadUGC();
+
+    await this.uploadToCos(applyData);
 
     return await this.commitUploadUGC();
   }

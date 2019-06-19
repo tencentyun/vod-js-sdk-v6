@@ -78,7 +78,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     validateInitParams(params: UploaderOptions): void;
     genFileInfo(): void;
     applyUploadUGC(retryCount?: number): Promise<IApplyData>;
-    uploadToCos(): Promise<void[]>;
+    uploadToCos(applyData: IApplyData): Promise<void[]>;
     commitUploadUGC(retryCount?: number): Promise<any>;
     start(): void;
     _start(): Promise<any>;

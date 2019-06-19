@@ -21,6 +21,10 @@ function delay(ms: number) {
   });
 }
 
+enum CLIENT_ERROR_CODE {
+  UPLOAD_FAIL = 1
+}
+
 export default {
   isFile,
   isFunction,
@@ -28,5 +32,6 @@ export default {
   noop,
   delay,
   isTest: process.env.NODE_ENV === "test",
-  isDev: process.env.NODE_ENV === "development"
+  isDev: process.env.NODE_ENV === "development",
+  CLIENT_ERROR_CODE
 };

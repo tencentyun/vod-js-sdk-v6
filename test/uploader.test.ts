@@ -161,14 +161,14 @@ describe("uploader.test.ts", () => {
           //   Region: uploadCosParam.region,
           //   Key: uploadCosParam.key,
           //   Body: uploadCosParam.file,
-          //   TaskReady: uploadCosParam.TaskReady,
+          //   onTaskReady: uploadCosParam.onTaskReady,
           //   onProgress: uploadCosParam.onProgress,
           // }
           assert(util.isString(sliceParams.Bucket));
           assert(util.isString(sliceParams.Region));
           assert(util.isString(sliceParams.Key));
           assert(util.isFile(sliceParams.Body));
-          assert(util.isFunction(sliceParams.TaskReady));
+          assert(util.isFunction(sliceParams.onTaskReady));
           assert(util.isFunction(sliceParams.onProgress));
           callback();
         });

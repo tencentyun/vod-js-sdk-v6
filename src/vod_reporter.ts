@@ -9,13 +9,15 @@ interface IVodReporter {}
 export enum VodReportEvent {
   report_apply = "report_apply",
   report_cos_upload = "report_cos_upload",
-  report_commit = "report_commit"
+  report_commit = "report_commit",
+  report_done = "report_done"
 }
 
 enum ReqType {
   apply = 10001,
   cos_upload = 20001,
-  commit = 10002
+  commit = 10002,
+  done = 40001
 }
 
 interface ReportObj {
@@ -51,6 +53,7 @@ export class VodReporter {
       this.onCosUpload.bind(this)
     );
     this.uploader.on(VodReportEvent.report_commit, this.onCommit.bind(this));
+    this.uploader.on(VodReportEvent.report_done, this.onDone.bind(this));
   }
 
   // ApplyUploadUGC
@@ -136,6 +139,23 @@ export class VodReporter {
       this.report(customReportData);
     } catch (e) {
       console.error(`onCommit`, e);
+      if (util.isTest) {
+        throw e;
+      }
+    }
+  }
+
+  onDone(reportObj: ReportObj) {
+    try {
+      const customReportData = {
+        reqType: ReqType.done,
+        errCode: reportObj.err && reportObj.err.code,
+        reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
+        reqTime: Number(reportObj.requestStartTime)
+      };
+      this.report(customReportData);
+    } catch (e) {
+      console.error(`onDone`, e);
       if (util.isTest) {
         throw e;
       }
