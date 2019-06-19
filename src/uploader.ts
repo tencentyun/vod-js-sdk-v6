@@ -6,6 +6,7 @@ import axios from "axios";
 import util from "./util";
 import { vodError } from "./types";
 import { VodReportEvent } from "./vod_reporter";
+import * as uuidv4 from "uuid/v4";
 
 export type IGetSignature = () => Promise<string>;
 export interface TcVodFileInfo {
@@ -78,6 +79,7 @@ export interface UploaderOptions {
   fileId?: string;
 
   appId?: number;
+  reportId?: string;
 }
 
 class Uploader extends EventEmitter implements UploaderOptions {
@@ -93,8 +95,11 @@ class Uploader extends EventEmitter implements UploaderOptions {
   videoName: string;
   sessionName: string = "";
   vodSessionKey: string = "";
-  appId: number = 0;
+  appId: number;
   fileId: string;
+
+  reqKey: string = uuidv4();
+  reportId: string;
 
   donePromise: Promise<any>;
 
@@ -115,7 +120,10 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.videoName = params.mediaName || params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
+
+    // custom report metrics
     this.appId = params.appId || 0;
+    this.reportId = params.reportId || "";
 
     this.genFileInfo();
   }

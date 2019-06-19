@@ -8,7 +8,7 @@
     "scripts": {
         "test": "NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
         "cover": "NODE_ENV=test nyc mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
-        "dev": "webpack --config webpack.config.js --watch",
+        "dev": "webpack --config webpack.dev.config.js --watch",
         "dist": "webpack --config webpack.config.js",
         "build": "npm run test && npm run dist && npm run compile",
         "compile": "tsc -p tsconfig.json",
@@ -33,9 +33,11 @@
     "dependencies": {
         "axios": "^0.18.0",
         "cos-js-sdk-v5": "0.5.16",
-        "js-sha1": "^0.6.0"
+        "js-sha1": "^0.6.0",
+        "uuid": "^3.3.2"
     },
     "devDependencies": {
+        "@types/uuid": "^3.4.4",
         "@types/mocha": "^5.2.5",
         "@types/semver": "^6.0.0",
         "@types/sha1": "^1.1.1",

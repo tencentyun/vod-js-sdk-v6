@@ -65,7 +65,9 @@ export class VodReporter {
         fileSize: uploader.videoFile.size,
         fileName: uploader.videoFile.name,
         fileType: uploader.videoFile.type,
-        vodSessionKey: uploader.vodSessionKey
+        vodSessionKey: uploader.vodSessionKey,
+        reqKey: uploader.reqKey,
+        reportId: uploader.reportId
       });
 
       const customReportData = {
@@ -146,6 +148,10 @@ export class VodReporter {
   }
 
   send(reportData: any) {
+    if (util.isDev || util.isTest) {
+      console.log(`send reportData`, reportData);
+      return;
+    }
     axios.post(this.reportUrl, reportData);
   }
 }

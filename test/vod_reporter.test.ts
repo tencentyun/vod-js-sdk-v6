@@ -20,7 +20,8 @@ function genUploader() {
   } as any) as File;
   const uploader = new Uploader({
     getSignature: fakeGetSignature,
-    mediaFile: fakeMediaFile
+    mediaFile: fakeMediaFile,
+    reportId: "12345"
   });
   return uploader;
 }
@@ -32,9 +33,12 @@ function checkAndDelCommonProperty(reportData: any, requestStartTime: Date) {
   delete reportData.reqTimeCost;
   assert.ok(semver.valid(reportData.version));
   delete reportData.version;
+
+  assert.ok(/\w+-\w+-\w+-\w+-\w+/.test(reportData.reqKey));
+  delete reportData.reqKey;
 }
 
-describe("uploader.test.ts", () => {
+describe("vod_reporter.test.ts", () => {
   const uploader = genUploader();
   const vodReporter = new VodReporter(uploader);
   describe("apply", () => {
@@ -46,6 +50,7 @@ describe("uploader.test.ts", () => {
 
         assert.deepStrictEqual(reportData, {
           platform: 3000,
+          reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           appId: 0,
@@ -77,6 +82,7 @@ describe("uploader.test.ts", () => {
 
         assert.deepStrictEqual(reportData, {
           platform: 3000,
+          reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           appId: 0,
@@ -105,6 +111,7 @@ describe("uploader.test.ts", () => {
 
         assert.deepStrictEqual(reportData, {
           platform: 3000,
+          reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           appId: 0,
@@ -134,6 +141,7 @@ describe("uploader.test.ts", () => {
 
         assert.deepStrictEqual(reportData, {
           platform: 3000,
+          reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           appId: 0,
@@ -164,6 +172,7 @@ describe("uploader.test.ts", () => {
 
         assert.deepStrictEqual(reportData, {
           platform: 3000,
+          reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           appId: 0,

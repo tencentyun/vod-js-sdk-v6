@@ -48,6 +48,7 @@ export interface UploaderOptions {
     mediaName?: string;
     fileId?: string;
     appId?: number;
+    reportId?: string;
 }
 declare class Uploader extends EventEmitter implements UploaderOptions {
     getSignature: IGetSignature;
@@ -62,6 +63,8 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     vodSessionKey: string;
     appId: number;
     fileId: string;
+    reqKey: string;
+    reportId: string;
     donePromise: Promise<any>;
     applyRequestTimeout: number;
     applyRequestRetryCount: number;
