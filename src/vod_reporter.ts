@@ -107,7 +107,9 @@ export class VodReporter {
         reqTime: Number(reportObj.requestStartTime)
       };
       if (reportObj.err) {
-        customReportData.cosErrCode = reportObj.err.error.Code;
+        customReportData.cosErrCode = reportObj.err.error
+          ? reportObj.err.error.Code
+          : reportObj.err;
         customReportData.errMsg = JSON.stringify(reportObj.err);
       }
       this.report(customReportData);
