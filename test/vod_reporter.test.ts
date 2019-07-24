@@ -53,6 +53,7 @@ describe("vod_reporter.test.ts", () => {
           reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+          errCode: 0,
           appId: 0,
           fileSize: 100,
           fileName: "vv.dd.mp4",
@@ -85,6 +86,7 @@ describe("vod_reporter.test.ts", () => {
           reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+          errCode: 1,
           appId: 0,
           fileSize: 100,
           fileName: "vv.dd.mp4",
@@ -114,6 +116,7 @@ describe("vod_reporter.test.ts", () => {
           reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+          errCode: 0,
           appId: 0,
           fileSize: 100,
           fileName: "vv.dd.mp4",
@@ -144,6 +147,7 @@ describe("vod_reporter.test.ts", () => {
           reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+          errCode: 0,
           appId: 0,
           fileSize: 100,
           fileName: "vv.dd.mp4",
@@ -175,6 +179,7 @@ describe("vod_reporter.test.ts", () => {
           reportId: "12345",
           device:
             "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+          errCode: 1,
           appId: 0,
           fileSize: 100,
           fileName: "vv.dd.mp4",

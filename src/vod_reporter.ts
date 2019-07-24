@@ -75,12 +75,14 @@ export class VodReporter {
 
       const customReportData = {
         reqType: ReqType.apply,
+        errCode: 0,
         vodErrCode: 0,
         errMsg: "",
         reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
         reqTime: Number(reportObj.requestStartTime)
       };
       if (reportObj.err) {
+        customReportData.errCode = 1;
         customReportData.vodErrCode = reportObj.err.code;
         customReportData.errMsg = reportObj.err.message;
       }
@@ -101,12 +103,14 @@ export class VodReporter {
     try {
       const customReportData = {
         reqType: ReqType.cos_upload,
+        errCode: 0,
         cosErrCode: "",
         errMsg: "",
         reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
         reqTime: Number(reportObj.requestStartTime)
       };
       if (reportObj.err) {
+        customReportData.errCode = 1;
         customReportData.cosErrCode = reportObj.err.error
           ? reportObj.err.error.Code
           : reportObj.err;
@@ -126,12 +130,14 @@ export class VodReporter {
     try {
       const customReportData = {
         reqType: ReqType.commit,
+        errCode: 0,
         vodErrCode: 0,
         errMsg: "",
         reqTimeCost: Number(new Date()) - Number(reportObj.requestStartTime),
         reqTime: Number(reportObj.requestStartTime)
       };
       if (reportObj.err) {
+        customReportData.errCode = 1;
         customReportData.vodErrCode = reportObj.err.code;
         customReportData.errMsg = reportObj.err.message;
       }
