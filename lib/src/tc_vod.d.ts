@@ -11,7 +11,7 @@ declare class TcVod {
     appId: number;
     reportId: string;
     constructor(params: TcVodParams);
-    upload(params: UploaderOptions): Uploader;
+    upload(params: Omit<UploaderOptions, "getSignature">): Uploader;
     initReporter(uploader: Uploader): void;
 }
 export default TcVod;

@@ -21,14 +21,14 @@ class TcVod {
     this.reportId = params.reportId;
   }
 
-  upload(params: UploaderOptions): Uploader {
-    params = {
+  upload(params: Omit<UploaderOptions, "getSignature">): Uploader {
+    const uploaderParams = {
       getSignature: this.getSignature,
       appId: this.appId,
       reportId: this.reportId,
       ...params
     };
-    const uploader = new Uploader(params);
+    const uploader = new Uploader(uploaderParams);
     if (this.allowReport) {
       this.initReporter(uploader);
     }

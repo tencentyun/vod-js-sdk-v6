@@ -1,6 +1,6 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "tencent cloud vod js sdk v6",
   "main": "lib/src/tc_vod.js",
   "unpkg": "dist/vod-js-sdk-v6.js",
@@ -56,7 +56,7 @@
     "prettier": "^1.17.1",
     "semver": "^6.1.1",
     "ts-loader": "^5.3.3",
-    "typescript": "^3.2.2",
+    "typescript": "^3.5.3",
     "webpack": "^4.28.1",
     "webpack-cli": "^3.2.1"
   },
