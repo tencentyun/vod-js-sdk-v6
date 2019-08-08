@@ -80,6 +80,10 @@ export interface UploaderOptions {
 
   appId?: number;
   reportId?: string;
+
+  applyRequestTimeout?: number;
+  commitRequestTimeout?: number;
+  retryDelay?: number;
 }
 
 class Uploader extends EventEmitter implements UploaderOptions {
@@ -103,11 +107,15 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
   donePromise: Promise<any>;
 
+  // apply 请求的超时时间
   applyRequestTimeout = 5000;
   applyRequestRetryCount = 3;
 
+  // commit 请求的超时时间
   commitRequestTimeout = 5000;
   commitRequestRetryCount = 3;
+
+  // 重试请求的等待时间
   retryDelay = 1000;
 
   constructor(params: UploaderOptions) {
@@ -120,6 +128,12 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.videoName = params.mediaName || params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
+
+    this.applyRequestTimeout =
+      params.applyRequestTimeout || this.applyRequestTimeout;
+    this.commitRequestTimeout =
+      params.commitRequestTimeout || this.commitRequestTimeout;
+    this.retryDelay = params.retryDelay || this.retryDelay;
 
     // custom report metrics
     this.appId = params.appId || 0;

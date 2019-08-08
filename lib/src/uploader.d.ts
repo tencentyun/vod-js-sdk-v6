@@ -49,6 +49,9 @@ export interface UploaderOptions {
     fileId?: string;
     appId?: number;
     reportId?: string;
+    applyRequestTimeout?: number;
+    commitRequestTimeout?: number;
+    retryDelay?: number;
 }
 declare class Uploader extends EventEmitter implements UploaderOptions {
     getSignature: IGetSignature;
