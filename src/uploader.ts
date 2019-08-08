@@ -99,11 +99,11 @@ class Uploader extends EventEmitter implements UploaderOptions {
   videoName: string;
   sessionName: string = "";
   vodSessionKey: string = "";
-  appId: number;
+  appId: number = 0;
   fileId: string;
 
   reqKey: string = uuidv4();
-  reportId: string;
+  reportId: string = "";
 
   donePromise: Promise<any>;
 
@@ -136,8 +136,8 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.retryDelay = params.retryDelay || this.retryDelay;
 
     // custom report metrics
-    this.appId = params.appId || 0;
-    this.reportId = params.reportId || "";
+    this.appId = params.appId || this.appId;
+    this.reportId = params.reportId || this.reportId;
 
     this.genFileInfo();
   }
