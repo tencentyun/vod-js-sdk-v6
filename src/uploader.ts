@@ -8,6 +8,8 @@ import { vodError } from "./types";
 import { VodReportEvent } from "./vod_reporter";
 import * as uuidv4 from "uuid/v4";
 
+export const vodAxios = axios.create();
+
 export type IGetSignature = () => Promise<string>;
 export interface TcVodFileInfo {
   name: string;
@@ -84,6 +86,8 @@ export interface UploaderOptions {
   applyRequestTimeout?: number;
   commitRequestTimeout?: number;
   retryDelay?: number;
+
+  enableResume?: boolean;
 }
 
 class Uploader extends EventEmitter implements UploaderOptions {
@@ -105,6 +109,9 @@ class Uploader extends EventEmitter implements UploaderOptions {
   reqKey: string = uuidv4();
   reportId: string = "";
 
+  // resume from break point
+  enableResume: boolean = true;
+
   donePromise: Promise<any>;
 
   // apply 请求的超时时间
@@ -125,6 +132,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.videoFile = params.mediaFile || params.videoFile;
     this.getSignature = params.getSignature;
 
+    this.enableResume = params.enableResume;
     this.videoName = params.mediaName || params.videoName;
     this.coverFile = params.coverFile;
     this.fileId = params.fileId;
@@ -241,7 +249,8 @@ class Uploader extends EventEmitter implements UploaderOptions {
     const videoInfo = this.videoInfo;
     const coverInfo = this.coverInfo;
     const vodSessionKey =
-      this.vodSessionKey || this.getStorage(this.sessionName);
+      this.vodSessionKey ||
+      (this.enableResume && this.getStorage(this.sessionName));
 
     // resume from break point
     if (vodSessionKey) {
@@ -294,7 +303,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
     let response;
     try {
-      response = await axios.post(
+      response = await vodAxios.post(
         "https://vod2.qcloud.com/v3/index.php?Action=ApplyUploadUGC",
         sendParams,
         {
@@ -448,7 +457,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
     let response;
     try {
-      response = await axios.post(
+      response = await vodAxios.post(
         "https://vod2.qcloud.com/v3/index.php?Action=CommitUploadUGC",
         {
           signature: signature,

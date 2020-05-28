@@ -2,7 +2,7 @@ import * as assert from "assert";
 import Uploader, { UploaderEvent } from "../src/uploader";
 import util from "../src/util";
 import * as mm from "mm";
-import axios from "axios";
+import { vodAxios as axios } from "../src/uploader";
 const COS = require("cos-js-sdk-v5");
 
 const fakeGetSignature = async () => {

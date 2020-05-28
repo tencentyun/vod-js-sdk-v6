@@ -1,6 +1,5 @@
-import Uploader from "./uploader";
+import Uploader, { vodAxios } from "./uploader";
 import * as pkg from "../package.json";
-import axios from "axios";
 import util from "./util";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -180,6 +179,6 @@ export class VodReporter {
       console.log(`send reportData`, reportData);
       return;
     }
-    axios.post(this.reportUrl, reportData);
+    vodAxios.post(this.reportUrl, reportData);
   }
 }
