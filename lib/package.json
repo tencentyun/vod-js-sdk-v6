@@ -1,13 +1,13 @@
 {
     "name": "vod-js-sdk-v6",
-    "version": "1.4.7",
+    "version": "1.4.8",
     "description": "tencent cloud vod js sdk v6",
     "main": "lib/src/tc_vod.js",
     "unpkg": "dist/vod-js-sdk-v6.js",
     "typings": "lib/src/tc_vod.d.ts",
     "scripts": {
-        "test": "NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
-        "cover": "NODE_ENV=test nyc mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+        "test": "cross-env NODE_ENV=test mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
+        "cover": "cross-env NODE_ENV=test nyc mocha -r espower-typescript/guess -r jsdom-global/register -r test/env test/**/*.test.ts",
         "dev": "webpack --config webpack.dev.config.js --watch",
         "dist": "webpack --config webpack.config.js",
         "build": "npm run test && npm run dist && npm run compile",
@@ -37,12 +37,13 @@
         "uuid": "^3.3.2"
     },
     "devDependencies": {
-        "@types/uuid": "^3.4.4",
         "@types/mocha": "^5.2.5",
         "@types/semver": "^6.0.0",
         "@types/sha1": "^1.1.1",
+        "@types/uuid": "^3.4.4",
         "@typescript-eslint/eslint-plugin": "^1.9.0",
         "@typescript-eslint/parser": "^1.9.0",
+        "cross-env": "^6.0.3",
         "eslint": "^5.16.0",
         "eslint-config-prettier": "^4.3.0",
         "eslint-plugin-prettier": "^3.1.0",

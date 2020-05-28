@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
+export declare const vodAxios: import("axios").AxiosInstance;
 export declare type IGetSignature = () => Promise<string>;
 export interface TcVodFileInfo {
     name: string;
@@ -52,6 +53,7 @@ export interface UploaderOptions {
     applyRequestTimeout?: number;
     commitRequestTimeout?: number;
     retryDelay?: number;
+    enableResume?: boolean;
 }
 declare class Uploader extends EventEmitter implements UploaderOptions {
     getSignature: IGetSignature;
@@ -68,6 +70,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     fileId: string;
     reqKey: string;
     reportId: string;
+    enableResume: boolean;
     donePromise: Promise<any>;
     applyRequestTimeout: number;
     applyRequestRetryCount: number;
