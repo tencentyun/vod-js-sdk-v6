@@ -355,6 +355,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
           TmpSecretId: applyData.tempCertificate.secretId,
           TmpSecretKey: applyData.tempCertificate.secretKey,
           XCosSecurityToken: applyData.tempCertificate.token,
+          StartTime: applyData.timestamp,
           ExpiredTime: applyData.tempCertificate.expiredTime
         });
       }
@@ -423,6 +424,11 @@ class Uploader extends EventEmitter implements UploaderOptions {
               return resolve();
             }
             self.delStorage(self.sessionName);
+            if (JSON.stringify(err) === '{"error":"error","headers":{}}') {
+              return reject({
+                error: "cors error"
+              });
+            }
             reject(err);
           }
         );

@@ -113,6 +113,9 @@ export class VodReporter {
         customReportData.cosErrCode = reportObj.err.error
           ? reportObj.err.error.Code
           : reportObj.err;
+        if (reportObj.err && reportObj.err.error === "error") {
+          customReportData.cosErrCode = "cors error";
+        }
         customReportData.errMsg = JSON.stringify(reportObj.err);
       }
       this.report(customReportData);
