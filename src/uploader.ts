@@ -349,7 +349,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
     const cos = new COS({
       getAuthorization: async function(options: object, callback: Function) {
-        const applyData = await self.applyUploadUGC();
+        // const applyData = await self.applyUploadUGC();
 
         callback({
           TmpSecretId: applyData.tempCertificate.secretId,
@@ -425,9 +425,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
             }
             self.delStorage(self.sessionName);
             if (JSON.stringify(err) === '{"error":"error","headers":{}}') {
-              return reject({
-                error: "cors error"
-              });
+              return reject(new Error("cors error"));
             }
             reject(err);
           }
