@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
+import { HOST } from "./util";
 export declare const vodAxios: import("axios").AxiosInstance;
 export declare type IGetSignature = () => Promise<string>;
 export interface TcVodFileInfo {
@@ -63,6 +64,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     coverInfo: TcVodFileInfo;
     cos: any;
     taskId: string;
+    cosAuthTime: number;
     videoName: string;
     sessionName: string;
     vodSessionKey: string;
@@ -77,6 +79,7 @@ declare class Uploader extends EventEmitter implements UploaderOptions {
     commitRequestTimeout: number;
     commitRequestRetryCount: number;
     retryDelay: number;
+    static host: HOST;
     constructor(params: UploaderOptions);
     setStorage(name: string, value: string): void;
     getStorage(name: string): string;

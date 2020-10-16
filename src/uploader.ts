@@ -3,12 +3,24 @@ const COS = require("cos-js-sdk-v5");
 
 import { EventEmitter } from "events";
 import axios from "axios";
-import util from "./util";
+import util, { HOST } from "./util";
 import { vodError } from "./types";
 import { VodReportEvent } from "./vod_reporter";
 import * as uuidv4 from "uuid/v4";
 
 export const vodAxios = axios.create();
+
+vodAxios.interceptors.response.use(
+  function(response) {
+    return response;
+  },
+  function(error) {
+    if (isNaN(error.code)) {
+      error.code = 500;
+    }
+    return Promise.reject(error);
+  }
+);
 
 export type IGetSignature = () => Promise<string>;
 export interface TcVodFileInfo {
@@ -99,6 +111,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
   cos: any;
   taskId: string;
+  cosAuthTime: number;
 
   videoName: string;
   sessionName: string = "";
@@ -125,6 +138,9 @@ class Uploader extends EventEmitter implements UploaderOptions {
   // 重试请求的等待时间
   retryDelay = 1000;
 
+  // domain
+  static host = HOST.MAIN;
+
   constructor(params: UploaderOptions) {
     super();
     this.validateInitParams(params);
@@ -147,6 +163,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     this.appId = params.appId || this.appId;
     this.reportId = params.reportId || this.reportId;
 
+    this.cosAuthTime = 0;
     this.genFileInfo();
   }
 
@@ -286,6 +303,9 @@ class Uploader extends EventEmitter implements UploaderOptions {
     const requestStartTime = new Date();
 
     async function whenError(err?: vodError): Promise<any> {
+      if (err.code === 500) {
+        Uploader.host = Uploader.host === HOST.MAIN ? HOST.BACKUP : HOST.MAIN;
+      }
       self.emit(VodReportEvent.report_apply, {
         err: err,
         requestStartTime: requestStartTime
@@ -304,7 +324,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     let response;
     try {
       response = await vodAxios.post(
-        "https://vod2.qcloud.com/v3/index.php?Action=ApplyUploadUGC",
+        `https://${Uploader.host}/v3/index.php?Action=ApplyUploadUGC`,
         sendParams,
         {
           timeout: this.applyRequestTimeout,
@@ -349,7 +369,18 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
     const cos = new COS({
       getAuthorization: async function(options: object, callback: Function) {
-        // const applyData = await self.applyUploadUGC();
+        const currentTimeStamp = util.getUnix();
+        const safeExpireTime =
+          (applyData.tempCertificate.expiredTime - applyData.timestamp) * 0.9;
+        if (self.cosAuthTime === 0) {
+          self.cosAuthTime = currentTimeStamp;
+        } else if (
+          self.cosAuthTime &&
+          currentTimeStamp - self.cosAuthTime >= safeExpireTime
+        ) {
+          applyData = await self.applyUploadUGC();
+          self.cosAuthTime = util.getUnix();
+        }
 
         callback({
           TmpSecretId: applyData.tempCertificate.secretId,
@@ -445,6 +476,9 @@ class Uploader extends EventEmitter implements UploaderOptions {
 
     const requestStartTime = new Date();
     async function whenError(err?: vodError): Promise<any> {
+      if (err.code === 500) {
+        Uploader.host = Uploader.host === HOST.MAIN ? HOST.BACKUP : HOST.MAIN;
+      }
       self.emit(VodReportEvent.report_commit, {
         err: err,
         requestStartTime: requestStartTime
@@ -462,7 +496,7 @@ class Uploader extends EventEmitter implements UploaderOptions {
     let response;
     try {
       response = await vodAxios.post(
-        "https://vod2.qcloud.com/v3/index.php?Action=CommitUploadUGC",
+        `https://${Uploader.host}/v3/index.php?Action=CommitUploadUGC`,
         {
           signature: signature,
           vodSessionKey: vodSessionKey
