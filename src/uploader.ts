@@ -1,7 +1,7 @@
 const sha1 = require("js-sha1");
 const COS = require("cos-js-sdk-v5");
 
-import { EventEmitter } from "events";
+import { EventEmitter } from "eventemitter3";
 import axios from "axios";
 import util, { HOST } from "./util";
 import { vodError } from "./types";

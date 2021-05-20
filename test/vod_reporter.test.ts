@@ -1,10 +1,9 @@
 import * as assert from "assert";
 import { VodReporter, VodReportEvent } from "../src/vod_reporter";
-import { EventEmitter } from "events";
 import Uploader from "../src/uploader";
 import * as semver from "semver";
 
-const device = window.navigator.userAgent
+const device = window.navigator.userAgent;
 
 function genUploader() {
   const fakeGetSignature = async () => {
@@ -54,7 +53,8 @@ describe("vod_reporter.test.ts", () => {
           platform: 3000,
           reportId: "12345",
           device:
-            device || "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+            device ||
+            "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           errCode: 0,
           appId: 0,
           fileSize: 100,
@@ -87,7 +87,8 @@ describe("vod_reporter.test.ts", () => {
           platform: 3000,
           reportId: "12345",
           device:
-            device || "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+            device ||
+            "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           errCode: 1,
           appId: 0,
           fileSize: 100,
@@ -117,7 +118,8 @@ describe("vod_reporter.test.ts", () => {
           platform: 3000,
           reportId: "12345",
           device:
-            device || "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+            device ||
+            "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           errCode: 0,
           appId: 0,
           fileSize: 100,
@@ -148,7 +150,8 @@ describe("vod_reporter.test.ts", () => {
           platform: 3000,
           reportId: "12345",
           device:
-            device || "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+            device ||
+            "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           errCode: 0,
           appId: 0,
           fileSize: 100,
@@ -180,7 +183,8 @@ describe("vod_reporter.test.ts", () => {
           platform: 3000,
           reportId: "12345",
           device:
-            device || "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
+            device ||
+            "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/13.2.0",
           errCode: 1,
           appId: 0,
           fileSize: 100,
