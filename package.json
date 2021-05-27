@@ -1,6 +1,6 @@
 {
   "name": "vod-js-sdk-v6",
-  "version": "1.4.12-alpha.0",
+  "version": "1.4.12",
   "description": "tencent cloud vod js sdk v6",
   "main": "lib/src/tc_vod.js",
   "unpkg": "dist/vod-js-sdk-v6.js",
