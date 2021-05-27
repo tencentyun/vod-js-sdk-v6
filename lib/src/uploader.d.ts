@@ -1,5 +1,4 @@
-/// <reference types="node" />
-import { EventEmitter } from "events";
+import { EventEmitter } from "eventemitter3";
 import { HOST } from "./util";
 export declare const vodAxios: import("axios").AxiosInstance;
 export declare type IGetSignature = () => Promise<string>;
