@@ -133,11 +133,13 @@ describe("uploader.test.ts", () => {
                 domain: "vod2.qcloud.com",
                 vodSessionKey:
                   "3FEmq9DWHl1xF819mM6j0fyDQDSON8VtwN/RTrl/9m49AEEWV9jV5txk3AckBj1lkl3EkTMVx1ah/wOuKPElzHG4gHwRVPpge+UZ7sdmqvmQJ9bhLhiAZDTDDMVlSW6j2a4bIIUDI7erahcpKs/oh0koMLcoErCFBr+nHhFKT2qfIyc8b+izX5GBFIkXuLzDGMjTnYuQAomqeHYanuP5dns0+7CGkK26M4d9n0VU7DEQ4GEweORsIQCqsQT6+0DLnZ9qFO4mBeVOb6Ro5qGIi3uhq2AFmMQmrMXZfdSvcdnoLYPmDxvM8inrhri0CHBIq6UyJqsKmsYU0ufHkc2S3feaVRHxM9ahqRK2iNXtOche9wH2dFJ+eX7OQ/Vek75rKlpCUE68peHv9KeNf5/7y9buUXeguBYC74pU+oJ2ffu/INgkFkP9tdw4EgkkRyqsQPIWbuFrXXy5fyPzCoMgDnH0QgzUsHGgKTkk4UjvLdXZR21soD6pxcdXj1n/VHyljouY8uMz5nvg3KTAL9ze73+MJvuD4LUIMahagY5MhiHbMCGHXOVG6BDq6WQr9PjkOxH3PteeekyWvxdaxc/icVvQO+2ytIX2/P/V91eBs9qmxpYvD2Mnf1HkeANPCRBIpvLhBRHRGPKN9tVg1CFcBRr6Ruxr5rs2E0eDPhy6s/5RwRcf2CcfnOTKC+jamY/qhgc1Kl3sLh7JkhM3Onwxi+i5OIdaOvdS2NYst6Xn0tQFDT+vOK3n45k4HTYK6LdaJZAqjmtBHNBeohp/JM/7ZiAcNoCsR4FPaTH9Y1GAGYZHC0nw/E932tYrg26QsyFeAOWhW6xkdk+TwMtV92bQu8DmvxojyQZlDJgWjJPa+1B9B9C7OtbYeUZ5+SBC+Z23YYplFkKyBEWC4j+x52R+g463In9DFsZdRb2NCmBGBC8CARgQypTZ4Q==",
+                // 测试参数tempCertificate需要从demo中的ApplyUploadUGC接口获取
+                // demo地址https://tencentyun.github.io/vod-js-sdk-v6/
                 tempCertificate: {
-                  secretId: "AKIDQdDpJ2prWTKv2DD3iVTREIJ6BcX7fKOv",
-                  secretKey: "7U7lo8efZvxFmHxX93U06qt9iNbW0ya0",
-                  token: "0b7d1d00e82fda8027624c95563c34a3107e224b30001",
-                  expiredTime: 1547726575
+                  secretId: "",
+                  secretKey: "",
+                  token: "",
+                  expiredTime: 1547719375,
                 },
                 appId: 1400170034,
                 timestamp: 1547719375,
